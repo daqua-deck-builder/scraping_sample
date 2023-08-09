@@ -186,6 +186,7 @@ pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec
 
     println!("{}", product_dir.display());
 
+    try_mkdir(&product_dir).unwrap();
     let files_result: std::io::Result<ReadDir> = fs::read_dir(product_dir);
 
     match files_result {
