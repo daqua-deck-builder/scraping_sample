@@ -1,11 +1,14 @@
 use std::collections::HashMap;
-use reqwest::{Client, Response};
+use reqwest::{Client, Response, Url};
 use scraper::{Html, Selector};
 use std::{fs};
+use std::fmt::Display;
 use std::path::{Path, PathBuf};
 use std::fs::{File, ReadDir};
 use std::io::prelude::*;
 use async_recursion::async_recursion;
+use serde::Deserialize;
+use serde_qs;
 
 #[derive(Clone)]
 pub struct SearchQuery {
@@ -229,4 +232,18 @@ pub fn find_many(content: &String, selector: String) -> Vec<String> {
 pub fn extract_number(s: &String) -> Option<i32> {
     let digits: String = s.chars().filter(|c| c.is_digit(10)).collect();
     digits.parse().ok()
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CardQuery {
+    card: String,
+    card_no: String,
+}
+
+impl
+
+pub fn parse_card_url(url_string: impl Display) -> Result<CardQuery, serde_qs::Error> {
+    let parsed_url: Url = Url::parse(&url_string.to_string()).expect("Failed to parse the URL");
+    let query: &str = parsed_url.query().unwrap_or_default();
+    serde_qs::from_str::<CardQuery>(query)
 }
