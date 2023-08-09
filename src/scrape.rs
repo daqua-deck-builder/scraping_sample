@@ -240,7 +240,16 @@ pub struct CardQuery {
     card_no: String,
 }
 
-impl
+impl CardQuery {
+    pub fn get_relative_filename(&self) -> String {
+        let mut tokens: Vec<_> = self.card_no.split("-").collect();
+        let id = tokens.last().unwrap().to_string();
+        tokens.pop();
+        let dir: String = tokens.join("-");
+
+        format!("{}/{}.html", dir, id)
+    }
+}
 
 pub fn parse_card_url(url_string: impl Display) -> Result<CardQuery, serde_qs::Error> {
     let parsed_url: Url = Url::parse(&url_string.to_string()).expect("Failed to parse the URL");
