@@ -10,6 +10,167 @@ use async_recursion::async_recursion;
 use serde::Deserialize;
 use serde_qs;
 
+pub mod wixoss {
+    use std::fmt::{Display, Formatter};
+    use scraper::{Html, Selector};
+    use regex::Regex;
+
+    #[derive(Debug)]
+    enum CardType {
+        Lrig,
+        Arts,
+        Signi,
+        Spell,
+        Resona,
+        ArtsCraft,
+        ResonaCraft,
+        SpellCraft,
+        Piece,
+        PieceChain,
+        Token,
+    }
+
+    pub trait WixossCard: Sized {
+        fn from_source(source: String) -> Self;
+    }
+
+    #[derive(Debug)]
+    enum Format {
+        AllStar,
+        KeySelection,
+        DivaSelection,
+    }
+
+    impl Display for Format {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Format::AllStar => write!(f, "all star"),
+                Format::KeySelection => write!(f, "key selection"),
+                Format::DivaSelection => write!(f, "diva selection")
+            }
+        }
+    }
+
+    enum AllCard {
+        Piece
+    }
+
+    // pub struct Card {
+//     no: String,
+//     name: String,
+//     pronounce: String,
+//     artist: String,
+//     card_type: CardType,
+//     color: String,
+//     level: Option<i32>,
+//     cost: Option<String>,
+//     limit: Option<String>,
+//     power: Option<String>,
+//     user: Option<String>,
+//     time: Option<String>,
+//     story: Option<String>,
+//     format: Format,
+//     rarity: String
+// }
+    fn element_to_name_and_pronounce(source: String) -> (String, String) {
+        let document = Html::parse_document(&source);
+
+        let br_selector = Selector::parse("br").unwrap();
+
+        let span_selector = Selector::parse("span").unwrap();
+
+        let mut name = String::new();
+        let mut pronounce = String::new();
+
+        if let Some(br_element) = document.select(&br_selector).next() {
+            if let Some(text_node) = br_element.prev_sibling() {
+                name = text_node.value().as_text().unwrap().to_string();
+            }
+        }
+
+        if let Some(span_element) = document.select(&span_selector).next() {
+            pronounce = span_element.inner_html();
+        }
+
+        let re_head = Regex::new(r"^＜").unwrap();
+        let re_tail = Regex::new(r"＞$").unwrap();
+
+        (name, re_tail.replace(&re_head.replace(&pronounce, ""), "").to_string())
+    }
+
+
+    #[derive(Debug)]
+    pub struct Piece {
+        no: String,
+        name: String,
+        pronounce: String,
+        artist: String,
+        card_type: CardType,
+        color: String,
+        // level: Option<i32>,
+        cost: Option<String>,
+        // limit: Option<String>,
+        // power: Option<String>,
+        user: Option<String>,
+        time: Option<String>,
+        story: Option<String>,
+        format: Format,
+        rarity: String,
+    }
+
+    impl WixossCard for Piece {
+        fn from_source(source: String) -> Self {
+            let document: Html = Html::parse_document(&source);
+
+            let selector_card_num = Selector::parse(".cardNum").unwrap();
+            let card_no = match document.select(&selector_card_num).next() {
+                Some(card_no) => card_no.inner_html(),
+                None => "unknown".into()
+            };
+
+            let selector_card_name = Selector::parse(".cardName").unwrap();
+            let card_name = match document.select(&selector_card_name).next() {
+                Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+                None => ("unknown".into(), "unknown".into())
+            };
+
+            let selector_rarity = Selector::parse(".cardRarity").unwrap();
+            let card_rarity = match document.select(&selector_rarity).next() {
+                Some(card_rarity) => card_rarity.inner_html(),
+                None => "unknown rarity".into()
+            };
+
+            let selector_artist = Selector::parse(".cardImg p span").unwrap();
+            let artist = match document.select(&selector_artist).next() {
+                Some(artist) => artist.inner_html(),
+                None => "unknown artist".into()
+            };
+
+            let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+            let mut card_data: Vec<String> = Vec::new();
+            for element in document.select(&selector_card_data) {
+                card_data.push(element.inner_html());
+            }
+
+            Self {
+                no: card_no,
+                name: card_name.0,
+                pronounce: card_name.1,
+                artist,
+                card_type: CardType::Piece,
+                color: card_data[2].clone(),
+                cost: Some(card_data[5].clone()),
+                user: Some(card_data[8].clone()),
+                time: Some(card_data[9].clone()),
+                story: Some(card_data[11].clone().trim().to_string()),
+                format: Format::DivaSelection,
+                rarity: card_rarity,
+            }
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SearchQuery {
     search: String,
@@ -330,37 +491,3 @@ pub fn write_to_cache(filename: PathBuf, body: String) -> Result<(), ()> {
     }
 }
 
-enum CardType {
-    Lrig,
-    Arts,
-    Signi,
-    Spell,
-    Resona,
-    ArtsCraft,
-    ResonaCraft,
-    SpellCraft,
-    Piece,
-    PieceChain,
-    Token
-}
-
-enum Format {
-    AllStar,
-    KeySelection,
-    DivaSelection
-}
-
-pub struct Card {
-    name: String,
-    artist: String,
-    card_type: CardType,
-    color: String,
-    level: Option<i32>,
-    cost: Option<String>,
-    limit: Option<String>,
-    power: Option<String>,
-    user: Option<String>,
-    time: Option<String>,
-    story: Option<String>,
-    rarity: String
-}
