@@ -5,6 +5,7 @@ use scraping_sample::scrape::{
 
 #[tokio::main]
 async fn main() {
-    let cq: CardQuery = parse_card_url("https://www.takaratomy.co.jp/products/wixoss/card_list.php?card=card_detail&card_no=WXDi-P12-090").expect("query string parse error");
-    println!("{:?}", cq.get_relative_filename());
+    let cq: CardQuery = CardQuery::from_card_no("WXDi-P14-001".into());
+    let text: Option<String> = cq.download_card_detail("./text_cache").await;
+    println!("{}", text.unwrap_or("detail download error".into()))
 }

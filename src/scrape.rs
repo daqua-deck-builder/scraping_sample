@@ -113,7 +113,6 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
     let p_no = product_type.get_path_relative();
     println!("{} {}", p_no, card_page);
 
-
     let url = "https://www.takaratomy.co.jp/products/wixoss/card/card_list.php";
 
     let search_query: SearchQuery = SearchQuery::new(&product_type, card_page);
@@ -175,6 +174,7 @@ pub fn find_one(content: &String, selector: String) -> Option<String> {
     let document: Html = Html::parse_document(&content);
     let main_selector: Selector = Selector::parse(selector.as_str()).unwrap();
 
+    println!("{:?}", document.clone());
     if let Some(element) = document.select(&main_selector).next() {
         Some(element.inner_html())
     } else {
@@ -249,10 +249,118 @@ impl CardQuery {
 
         format!("{}/{}.html", dir, id)
     }
+
+    pub fn from_card_no(card_no: String) -> Self {
+        Self {
+            card_no,
+            card: "card_detail".into(),
+        }
+    }
+    pub fn to_hashmap(&self) -> HashMap<String, String> {
+        HashMap::from_iter(vec![
+            ("card_no".into(), self.card_no.clone()),
+            ("card".into(), self.card.clone()),
+        ])
+    }
+
+    pub async fn download_card_detail(&self, cache_dir: &'static str) -> Option<String> {
+        let cache_file: PathBuf = PathBuf::from(format!("{}/{}", cache_dir, self.get_relative_filename()));
+
+        println!("{:?}", cache_file);
+        if cache_file.exists() {
+            let mut file: File = File::open(&cache_file).expect("cache file open error");
+            let mut contents = String::new();
+
+            match file.read_to_string(&mut contents) {
+                Ok(_) => Some(contents),
+                _ => { None }
+            }
+        } else {
+            let url = "https://www.takaratomy.co.jp/products/wixoss/card_list.php";
+
+            let form: HashMap<String, String> = self.to_hashmap();
+
+            let client: Client = Client::new();
+            let res: Result<Response, reqwest::Error> = client.post(url)
+                .header(reqwest::header::COOKIE, "wixAge=conf;")
+                .form(&form)
+                .send().await;
+
+            match res {
+                Ok(response) => {
+                    let body: String = response.text().await.unwrap();
+                    let body: String = format!("<html><body>{}", body);
+                    let content = find_one(&body, ".cardDetail".into());
+
+                    if let Some(body_) = content {
+                        match write_to_cache(cache_file, body_.clone()) {
+                            Ok(()) => Some(body_),
+                            _ => None
+                        }
+                    } else {
+                        println!("{}", body);
+                        None
+                    }
+                }
+                Err(e) => {
+                    eprintln!("{}", e);
+                    None
+                }
+            }
+        }
+    }
 }
 
 pub fn parse_card_url(url_string: impl Display) -> Result<CardQuery, serde_qs::Error> {
     let parsed_url: Url = Url::parse(&url_string.to_string()).expect("Failed to parse the URL");
     let query: &str = parsed_url.query().unwrap_or_default();
     serde_qs::from_str::<CardQuery>(query)
+}
+
+pub fn write_to_cache(filename: PathBuf, body: String) -> Result<(), ()> {
+    if let Some(parent_path) = filename.parent() {
+        try_mkdir(&parent_path).unwrap();
+        let file: Result<File, std::io::Error> = File::create(&filename);
+        if let Ok(mut file_) = file {
+            file_.write_all(body.as_bytes()).unwrap();
+        }
+        Ok(())
+    } else {
+        Err(())
+    }
+}
+
+enum CardType {
+    Lrig,
+    Arts,
+    Signi,
+    Spell,
+    Resona,
+    ArtsCraft,
+    ResonaCraft,
+    SpellCraft,
+    Piece,
+    PieceChain,
+    Token
+}
+
+enum Format {
+    AllStar,
+    KeySelection,
+    DivaSelection
+}
+
+pub struct Card {
+    name: String,
+    artist: String,
+    card_type: CardType,
+    color: String,
+    level: Option<i32>,
+    cost: Option<String>,
+    limit: Option<String>,
+    power: Option<String>,
+    user: Option<String>,
+    time: Option<String>,
+    story: Option<String>,
+    rarity: String
 }
