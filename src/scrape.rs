@@ -15,7 +15,7 @@ pub mod wixoss {
     use scraper::{Html, Selector};
     use regex::Regex;
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     enum CardType {
         Lrig,
         Arts,
@@ -26,15 +26,44 @@ pub mod wixoss {
         ResonaCraft,
         SpellCraft,
         Piece,
-        PieceChain,
+        PieceRelay,
         Token,
+    }
+
+    impl Display for CardType {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            let s: &str = match &self {
+                CardType::Lrig => "ルリグ",
+                CardType::Arts => "アーツ",
+                CardType::Signi => "シグニ",
+                CardType::Spell => "スペル",
+                CardType::Resona => "レゾナ",
+                CardType::ArtsCraft => "アーツ(クラフト)",
+                CardType::ResonaCraft => "レゾナ(クラフト)",
+                CardType::SpellCraft => "スペル(クラフト)",
+                CardType::Piece => "ピース",
+                CardType::PieceRelay => "ピース(リレー)",
+                CardType::Token => "トークン",
+                _ => "不明"
+            };
+            write!(f, "{}", s)
+        }
     }
 
     pub trait WixossCard: Sized {
         fn from_source(source: String) -> Self;
     }
 
-    #[derive(Debug)]
+    // impl Display for dyn WixossCard {
+    //     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    //         write!(f, "{}, {}",
+    //                &self.no,
+    //                &self.name,
+    //         )
+    //     }
+    // }
+
+    #[derive(Debug, Clone)]
     enum Format {
         AllStar,
         KeySelection,
@@ -51,27 +80,97 @@ pub mod wixoss {
         }
     }
 
-    enum AllCard {
-        Piece
+    #[derive(Debug, Clone)]
+    struct OptionString {
+        value: Option<String>,
     }
 
-    // pub struct Card {
-//     no: String,
-//     name: String,
-//     pronounce: String,
-//     artist: String,
-//     card_type: CardType,
-//     color: String,
-//     level: Option<i32>,
-//     cost: Option<String>,
-//     limit: Option<String>,
-//     power: Option<String>,
-//     user: Option<String>,
-//     time: Option<String>,
-//     story: Option<String>,
-//     format: Format,
-//     rarity: String
-// }
+    impl OptionString {
+        fn from_string(value: String) -> Self { // Noneの場合はNoneではなく""空文字
+            if value == String::from("") {
+                Self { value: None }
+            } else {
+                Self { value: Some(value) }
+            }
+        }
+    }
+
+    impl Display for OptionString {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            match &self.value {
+                Some(v) => write!(f, "{}", v),
+                None => write!(f, "")
+            }
+        }
+    }
+
+    struct OptionInteger {
+        value: Option<u32>,
+    }
+
+    impl OptionInteger {
+        fn from(value: Option<u32>) -> Self {
+            match value {
+                Some(v) => Self { value: Some(v) },
+                None => Self { value: None }
+            }
+        }
+    }
+
+    impl Display for OptionInteger {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            match self.value {
+                None => write!(f, ""),
+                Some(v) => write!(f, "{}", v.to_string())
+            }
+        }
+    }
+
+    enum AllCard {
+        Piece,
+        PieceRelay,
+    }
+
+    pub struct Card {
+        no: String,
+        name: String,
+        pronounce: String,
+        artist: String,
+        card_type: CardType,
+        color: String,
+        level: OptionString,
+        cost: OptionString,
+        limit: OptionString,
+        power: OptionString,
+        user: OptionString,
+        time: OptionString,
+        story: OptionString,
+        format: Format,
+        rarity: String,
+    }
+
+    impl Display for Card {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+                   self.no,
+                   self.name,
+                   self.pronounce,
+                   self.artist,
+                   self.card_type,
+                   self.color,
+                   self.level,
+                   self.cost,
+                   self.limit,
+                   self.power,
+                   self.user,
+                   self.time,
+                   self.story,
+                   self.format,
+                   self.rarity
+            )
+        }
+    }
+
     fn element_to_name_and_pronounce(source: String) -> (String, String) {
         let document = Html::parse_document(&source);
 
@@ -108,14 +207,36 @@ pub mod wixoss {
         card_type: CardType,
         color: String,
         // level: Option<i32>,
-        cost: Option<String>,
+        cost: OptionString,
         // limit: Option<String>,
         // power: Option<String>,
-        user: Option<String>,
-        time: Option<String>,
-        story: Option<String>,
+        user: OptionString,
+        time: OptionString,
+        story: OptionString,
         format: Format,
         rarity: String,
+    }
+
+    impl Into<Card> for Piece {
+        fn into(self) -> Card {
+            Card {
+                no: self.no.clone(),
+                name: self.name.clone(),
+                pronounce: self.pronounce.clone(),
+                artist: self.artist.clone(),
+                card_type: self.card_type.clone(),
+                color: self.color.clone(),
+                level: OptionString::from_string("".into()),
+                cost: self.cost.clone(),
+                limit: OptionString::from_string("".into()),
+                power: OptionString::from_string("".into()),
+                user: self.user.clone(),
+                time: self.time.clone(),
+                story: self.story.clone(),
+                format: self.format.clone(),
+                rarity: self.rarity.clone(),
+            }
+        }
     }
 
     impl WixossCard for Piece {
@@ -160,16 +281,110 @@ pub mod wixoss {
                 artist,
                 card_type: CardType::Piece,
                 color: card_data[2].clone(),
-                cost: Some(card_data[5].clone()),
-                user: Some(card_data[8].clone()),
-                time: Some(card_data[9].clone()),
-                story: Some(card_data[11].clone().trim().to_string()),
+                cost: OptionString::from_string(card_data[5].clone()),
+                user: OptionString::from_string(card_data[8].clone()),
+                time: OptionString::from_string(card_data[9].clone()),
+                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
+                format: Format::DivaSelection,
+                rarity: card_rarity,
+            }
+        }
+    }
+
+    #[derive(Debug)]
+    pub struct PieceRelay {
+        no: String,
+        name: String,
+        pronounce: String,
+        artist: String,
+        card_type: CardType,
+        color: String,
+        // level: Option<i32>,
+        cost: OptionString,
+        // limit: Option<String>,
+        // power: Option<String>,
+        user: OptionString,
+        time: OptionString,
+        story: OptionString,
+        format: Format,
+        rarity: String,
+    }
+
+    impl Into<Card> for PieceRelay {
+        fn into(self) -> Card {
+            Card {
+                no: self.no.clone(),
+                name: self.name.clone(),
+                pronounce: self.pronounce.clone(),
+                artist: self.artist.clone(),
+                card_type: self.card_type.clone(),
+                color: self.color.clone(),
+                level: OptionString::from_string("".into()),
+                cost: self.cost.clone(),
+                limit: OptionString::from_string("".into()),
+                power: OptionString::from_string("".into()),
+                user: self.user.clone(),
+                time: self.time.clone(),
+                story: self.story.clone(),
+                format: self.format.clone(),
+                rarity: self.rarity.clone(),
+            }
+        }
+    }
+
+    impl WixossCard for PieceRelay {
+        fn from_source(source: String) -> Self {
+            let document: Html = Html::parse_document(&source);
+
+            let selector_card_num = Selector::parse(".cardNum").unwrap();
+            let card_no = match document.select(&selector_card_num).next() {
+                Some(card_no) => card_no.inner_html(),
+                None => "unknown".into()
+            };
+
+            let selector_card_name = Selector::parse(".cardName").unwrap();
+            let card_name = match document.select(&selector_card_name).next() {
+                Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+                None => ("unknown".into(), "unknown".into())
+            };
+
+            let selector_rarity = Selector::parse(".cardRarity").unwrap();
+            let card_rarity = match document.select(&selector_rarity).next() {
+                Some(card_rarity) => card_rarity.inner_html(),
+                None => "unknown rarity".into()
+            };
+
+            let selector_artist = Selector::parse(".cardImg p span").unwrap();
+            let artist = match document.select(&selector_artist).next() {
+                Some(artist) => artist.inner_html(),
+                None => "unknown artist".into()
+            };
+
+            let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+            let mut card_data: Vec<String> = Vec::new();
+            for element in document.select(&selector_card_data) {
+                card_data.push(element.inner_html());
+            }
+
+            Self {
+                no: card_no,
+                name: card_name.0,
+                pronounce: card_name.1,
+                artist,
+                card_type: CardType::PieceRelay,
+                color: card_data[2].clone(),
+                cost: OptionString::from_string(card_data[5].clone()),
+                user: OptionString::from_string(card_data[8].clone()),
+                time: OptionString::from_string(card_data[9].clone()),
+                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
             }
         }
     }
 }
+
 
 #[derive(Clone)]
 pub struct SearchQuery {
