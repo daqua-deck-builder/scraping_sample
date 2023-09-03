@@ -126,6 +126,23 @@ pub mod wixoss {
         }
     }
 
+    #[derive(Clone, Debug)]
+    struct Skills {
+        value: Vec<String>,
+    }
+
+    impl Skills {
+        fn from_vec(skills: Vec<String>) -> Self {
+            Self { value: skills }
+        }
+    }
+
+    impl Display for Skills {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}", self.value.join("\n"))
+        }
+    }
+
     enum AllCard {
         Piece,
         PieceRelay,
@@ -147,11 +164,12 @@ pub mod wixoss {
         story: OptionString,
         format: Format,
         rarity: String,
+        skill: Skills,
     }
 
     impl Display for Card {
         fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
                    self.no,
                    self.name,
                    self.pronounce,
@@ -166,7 +184,8 @@ pub mod wixoss {
                    self.time,
                    self.story,
                    self.format,
-                   self.rarity
+                   self.rarity,
+                   self.skill
             )
         }
     }
@@ -215,6 +234,7 @@ pub mod wixoss {
         story: OptionString,
         format: Format,
         rarity: String,
+        skill: Skills,
     }
 
     impl Into<Card> for Piece {
@@ -235,6 +255,7 @@ pub mod wixoss {
                 story: self.story.clone(),
                 format: self.format.clone(),
                 rarity: self.rarity.clone(),
+                skill: self.skill.clone(),
             }
         }
     }
@@ -274,6 +295,13 @@ pub mod wixoss {
                 card_data.push(element.inner_html());
             }
 
+            let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+            let card_skill: String = match document.select(&selector_card_skill).next() {
+                Some(card_skill) => card_skill.inner_html(),
+                None => "No skill".into()
+            };
+
+
             Self {
                 no: card_no,
                 name: card_name.0,
@@ -287,6 +315,7 @@ pub mod wixoss {
                 story: OptionString::from_string(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
+                skill: parse_card_skill(card_skill.clone()),
             }
         }
     }
@@ -308,6 +337,7 @@ pub mod wixoss {
         story: OptionString,
         format: Format,
         rarity: String,
+        skill: Skills,
     }
 
     impl Into<Card> for PieceRelay {
@@ -328,6 +358,7 @@ pub mod wixoss {
                 story: self.story.clone(),
                 format: self.format.clone(),
                 rarity: self.rarity.clone(),
+                skill: self.skill.clone(),
             }
         }
     }
@@ -367,6 +398,12 @@ pub mod wixoss {
                 card_data.push(element.inner_html());
             }
 
+            let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+            let card_skill: String = match document.select(&selector_card_skill).next() {
+                Some(card_skill) => card_skill.inner_html(),
+                None => "No skill".into()
+            };
+
             Self {
                 no: card_no,
                 name: card_name.0,
@@ -380,8 +417,22 @@ pub mod wixoss {
                 story: OptionString::from_string(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
+                skill: parse_card_skill(card_skill),
             }
         }
+    }
+
+    fn parse_card_skill(source: String) -> Skills {
+        let re_br = Regex::new(r"<br\s?>").unwrap();
+
+        Skills::from_vec(
+            re_br
+                .replace_all(&source, "\n")
+                .split("\n")
+                .map(|line| line.trim().to_string())
+                .filter(|line| !line.is_empty())  // この行を追加して空の行を除去する
+                .collect()
+        )
     }
 }
 
