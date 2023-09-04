@@ -12,6 +12,7 @@ use serde_qs;
 
 pub mod wixoss {
     use std::fmt::{Display, Formatter};
+    use std::thread::current;
     use scraper::{Html, Selector};
     use regex::Regex;
 
@@ -169,7 +170,7 @@ pub mod wixoss {
 
     impl Display for Card {
         fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}",
+            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n{}",
                    self.no,
                    self.name,
                    self.pronounce,
@@ -430,9 +431,35 @@ pub mod wixoss {
                 .replace_all(&source, "\n")
                 .split("\n")
                 .map(|line| line.trim().to_string())
+                .map(remove_rule_explain)
                 .filter(|line| !line.is_empty())  // この行を追加して空の行を除去する
                 .collect()
         )
+    }
+
+    fn remove_rule_explain(text: String) -> String {
+        let text = replace_img_with_alt(text);
+
+        let remove_patterns = vec![
+            (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", "+EXCEED"),
+            (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", "+DREAM TEAM"),
+            (r"（あなたの場にいるルリグ３体がこの条件を満たす）", "+TEAM")
+        ];
+        let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
+            let re = Regex::new(pat.0).unwrap();
+            re.replace_all(&current_text, pat.1).to_string()
+        });
+
+        replaced_text
+    }
+
+    fn replace_img_with_alt(html: String) -> String {
+        let re = Regex::new(r#"<img[^>]*alt="([^"]*)"[^>]*>"#).unwrap();
+        let replaced = re.replace_all(&html, |caps: &regex::Captures| {
+            let alt_text = &caps[1];
+            alt_text.replace("2》", "》")
+        });
+        replaced.into_owned()
     }
 }
 
