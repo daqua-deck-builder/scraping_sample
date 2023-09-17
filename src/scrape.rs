@@ -16,8 +16,8 @@ pub mod wixoss {
     use scraper::{Html, Selector};
     use regex::Regex;
 
-    #[derive(Debug, Clone)]
-    enum CardType {
+    #[derive(Debug, Clone, PartialEq)]
+    pub enum CardType {
         Lrig,
         Arts,
         Signi,
@@ -154,7 +154,7 @@ pub mod wixoss {
         name: String,
         pronounce: String,
         artist: String,
-        card_type: CardType,
+        pub card_type: CardType,
         color: String,
         level: OptionString,
         cost: OptionString,

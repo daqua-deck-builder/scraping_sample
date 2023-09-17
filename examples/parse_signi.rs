@@ -9,7 +9,7 @@ use std::io::prelude::*;
 use async_recursion::async_recursion;
 use serde::Deserialize;
 use serde_qs;
-use scraping_sample::scrape::wixoss::{Signi, WixossCard, Card};
+use scraping_sample::scrape::wixoss::{Signi, WixossCard, Card, CardType};
 
 fn main() {
     let source: String = r##"
@@ -133,6 +133,8 @@ fn main() {
 
     let signi = Signi::from_source(source);
     println!("{}", &signi);
-    // let card: Card = signi.into();
+    let card: Card = signi.into();
     // println!("{}", card);
+
+    assert_eq!(card.card_type, CardType::Signi);
 }
