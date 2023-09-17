@@ -513,7 +513,7 @@ pub mod wixoss {
                 name: card_name.0,
                 pronounce: card_name.1,
                 artist,
-                card_type: CardType::PieceRelay,
+                card_type: CardType::Signi,
                 color: card_data[2].clone(),
                 level: OptionString::from_string(card_data[3].clone()),
                 // cost: OptionString::from_string(card_data[5].clone()),
