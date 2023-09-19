@@ -698,6 +698,7 @@ pub mod wixoss {
             (r"（あなたの場にいるルリグ３体がこの条件を満たす）", "*TEAM*"),
             (r"（シグニは覚醒すると場にあるかぎり覚醒状態になる）", "*AWAKE*"),
             (r"ガードアイコン", "*GUARD ICON*"),
+            (r"（凍結されたシグニは次の自分のアップフェイズにアップしない）", "*FROZEN*"),
         ];
         let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
             let re = Regex::new(pat.0).unwrap();
