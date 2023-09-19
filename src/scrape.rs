@@ -81,13 +81,13 @@ pub mod wixoss {
         }
     }
 
-    #[derive(Debug, Clone)]
-    struct OptionString {
+    #[derive(Debug, Clone, PartialEq)]
+    pub struct OptionString {
         value: Option<String>,
     }
 
     impl OptionString {
-        fn from_string(value: String) -> Self { // Noneの場合はNoneではなく""空文字
+        pub fn from_string(value: String) -> Self { // Noneの場合はNoneではなく""空文字
             if value == String::from("") {
                 Self { value: None }
             } else {
@@ -162,7 +162,7 @@ pub mod wixoss {
         power: OptionString,
         user: OptionString,
         time: OptionString,
-        story: OptionString,
+        pub story: OptionString,
         format: Format,
         rarity: String,
         skill: Skills,
@@ -313,7 +313,7 @@ pub mod wixoss {
                 cost: OptionString::from_string(card_data[5].clone()),
                 user: OptionString::from_string(card_data[8].clone()),
                 time: OptionString::from_string(card_data[9].clone()),
-                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
+                story: parse_story(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
                 skill: parse_card_skill(card_skill.clone()),
@@ -415,7 +415,7 @@ pub mod wixoss {
                 cost: OptionString::from_string(card_data[5].clone()),
                 user: OptionString::from_string(card_data[8].clone()),
                 time: OptionString::from_string(card_data[9].clone()),
-                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
+                story: parse_story(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
                 skill: parse_card_skill(card_skill),
@@ -521,7 +521,7 @@ pub mod wixoss {
                 power: OptionString::from_string(card_data[7].clone()),
                 user: OptionString::from_string(card_data[8].clone()),
                 // time: OptionString::from_string(card_data[9].clone()),
-                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
+                story: parse_story(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
                 skill: parse_card_skill(card_skill),
@@ -647,7 +647,7 @@ pub mod wixoss {
                 // power: OptionString::from_string(card_data[7].clone()),
                 user: OptionString::from_string(card_data[8].clone()),
                 // time: OptionString::from_string(card_data[9].clone()),
-                story: OptionString::from_string(card_data[11].clone().trim().to_string()),
+                story: parse_story(card_data[11].clone().trim().to_string()),
                 format: Format::DivaSelection,
                 rarity: card_rarity,
                 skill: parse_card_skill(card_skill),
@@ -693,9 +693,11 @@ pub mod wixoss {
         let text = replace_img_with_alt(text);
 
         let remove_patterns = vec![
-            (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", "+EXCEED"),
-            (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", "+DREAM TEAM"),
-            (r"（あなたの場にいるルリグ３体がこの条件を満たす）", "+TEAM"),
+            (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", "*EXCEED*"),
+            (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", "*DREAM TEAM*"),
+            (r"（あなたの場にいるルリグ３体がこの条件を満たす）", "*TEAM*"),
+            (r"（シグニは覚醒すると場にあるかぎり覚醒状態になる）", "*AWAKE*"),
+            (r"ガードアイコン", "*GUARD ICON*"),
         ];
         let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
             let re = Regex::new(pat.0).unwrap();
@@ -712,6 +714,14 @@ pub mod wixoss {
             alt_text.replace("2》", "》")
         });
         replaced.into_owned()
+    }
+
+    fn parse_story(html: String) -> OptionString {
+        if html.contains(r##"class="cardData_story_img""##) {
+            OptionString::from_string("ディソナ".into())
+        } else {
+            OptionString::from_string("".into())
+        }
     }
 }
 
