@@ -94,6 +94,10 @@ pub mod wixoss {
                 Self { value: Some(value) }
             }
         }
+
+        pub fn empty() -> Self {
+            Self {value: None}
+        }
     }
 
     impl Display for OptionString {
@@ -155,6 +159,7 @@ pub mod wixoss {
         pronounce: String,
         artist: String,
         pub card_type: CardType,
+        klass: OptionString,
         color: String,
         level: OptionString,
         cost: OptionString,
@@ -170,12 +175,13 @@ pub mod wixoss {
 
     impl Display for Card {
         fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n{}",
+            write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n{}",
                    self.no,
                    self.name,
                    self.pronounce,
                    self.artist,
                    self.card_type,
+                   self.klass,
                    self.color,
                    self.level,
                    self.cost,
@@ -246,11 +252,12 @@ pub mod wixoss {
                 pronounce: self.pronounce.clone(),
                 artist: self.artist.clone(),
                 card_type: self.card_type.clone(),
+                klass: OptionString::empty(),
                 color: self.color.clone(),
-                level: OptionString::from_string("".into()),
+                level: OptionString::empty(),
                 cost: self.cost.clone(),
-                limit: OptionString::from_string("".into()),
-                power: OptionString::from_string("".into()),
+                limit: OptionString::empty(),
+                power: OptionString::empty(),
                 user: self.user.clone(),
                 time: self.time.clone(),
                 story: self.story.clone(),
@@ -349,11 +356,12 @@ pub mod wixoss {
                 pronounce: self.pronounce.clone(),
                 artist: self.artist.clone(),
                 card_type: self.card_type.clone(),
+                klass: OptionString::empty(),
                 color: self.color.clone(),
-                level: OptionString::from_string("".into()),
+                level: OptionString::empty(),
                 cost: self.cost.clone(),
-                limit: OptionString::from_string("".into()),
-                power: OptionString::from_string("".into()),
+                limit: OptionString::empty(),
+                power: OptionString::empty(),
                 user: self.user.clone(),
                 time: self.time.clone(),
                 story: self.story.clone(),
@@ -430,6 +438,7 @@ pub mod wixoss {
         pronounce: String,
         artist: String,
         card_type: CardType,
+        klass: OptionString,
         color: String,
         level: OptionString,
         // cost: OptionString,
@@ -452,6 +461,7 @@ pub mod wixoss {
                 pronounce: self.pronounce.clone(),
                 artist: self.artist.clone(),
                 card_type: self.card_type.clone(),
+                klass: self.klass.clone(),
                 color: self.color.clone(),
                 level: self.level.clone(),
                 cost: OptionString::from_string("".into()),
@@ -514,6 +524,7 @@ pub mod wixoss {
                 pronounce: card_name.1,
                 artist,
                 card_type: CardType::Signi,
+                klass: OptionString::from_string(card_data[1].clone()),
                 color: card_data[2].clone(),
                 level: OptionString::from_string(card_data[3].clone()),
                 // cost: OptionString::from_string(card_data[5].clone()),
@@ -536,6 +547,7 @@ pub mod wixoss {
             write!(f, "読み\t:{}\n", self.pronounce)?;
             write!(f, "絵\t:{}\n", self.artist)?;
             write!(f, "Type\t:{}\n", self.card_type)?;
+            write!(f, "種族\t:{}\n", self.klass)?;
             write!(f, "色\t:{}\n", self.color)?;
             write!(f, "レベル\t:{}\n", self.level)?;
             write!(f, "リミット\t:{}\n", self.limit)?;
@@ -578,13 +590,14 @@ pub mod wixoss {
                 pronounce: self.pronounce.clone(),
                 artist: self.artist.clone(),
                 card_type: self.card_type.clone(),
+                klass: OptionString::empty(),
                 color: self.color.clone(),
-                level: OptionString::from_string("".into()),
+                level: OptionString::empty(),
                 cost: self.cost.clone(),
-                limit: OptionString::from_string("".into()),
-                power: OptionString::from_string("".into()),
+                limit: OptionString::empty(),
+                power: OptionString::empty(),
                 user: self.user.clone(),
-                time: OptionString::from_string("".into()),
+                time: OptionString::empty(),
                 story: self.story.clone(),
                 format: self.format.clone(),
                 rarity: self.rarity.clone(),
@@ -721,7 +734,7 @@ pub mod wixoss {
         if html.contains(r##"class="cardData_story_img""##) {
             OptionString::from_string("ディソナ".into())
         } else {
-            OptionString::from_string("".into())
+            OptionString::empty()
         }
     }
 }
