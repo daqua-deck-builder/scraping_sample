@@ -973,6 +973,7 @@ pub mod wixoss {
             (r"ガードアイコン", "*GUARD ICON*"),
             (r"（凍結されたシグニは次の自分のアップフェイズにアップしない）", "*FROZEN*"),
             (r"（フェゾーネマジックは５種類ある）", "*FESONE MAGIC*"),
+            (r"（【出】能力の：の左側はコストである。コストを支払わず発動しないことを選んでもよい）", "*CIP COST*"),
         ];
         let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
             let re = Regex::new(pat.0).unwrap();
