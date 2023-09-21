@@ -96,7 +96,7 @@ pub mod wixoss {
         }
 
         pub fn empty() -> Self {
-            Self {value: None}
+            Self { value: None }
         }
     }
 
@@ -688,6 +688,136 @@ pub mod wixoss {
         }
     }
 
+
+    #[derive(Debug)]
+    pub struct Lrig {
+        no: String,
+        name: String,
+        pronounce: String,
+        artist: String,
+        card_type: CardType,
+        // klass: OptionString,
+        color: String,
+        level: OptionString,
+        cost: OptionString,
+        limit: OptionString,
+        // power: OptionString,
+        user: OptionString,
+        // time: OptionString,
+        story: OptionString,
+        format: Format,
+        rarity: String,
+        skill: Skills,
+    }
+
+    impl Into<Card> for Lrig {
+        fn into(self) -> Card {
+            Card {
+                no: self.no.clone(),
+                name: self.name.clone(),
+                pronounce: self.pronounce.clone(),
+                artist: self.artist.clone(),
+                card_type: self.card_type.clone(),
+                klass: OptionString::empty(),
+                color: self.color.clone(),
+                level: self.level.clone(),
+                cost: self.cost.clone(),
+                limit: self.limit.clone(),
+                power: OptionString::empty(),
+                user: self.user.clone(),
+                time: OptionString::empty(),
+                story: self.story.clone(),
+                format: self.format.clone(),
+                rarity: self.rarity.clone(),
+                skill: self.skill.clone(),
+            }
+        }
+    }
+
+    impl WixossCard for Lrig {
+        fn from_source(source: String) -> Self {
+            let document: Html = Html::parse_document(&source);
+
+            let selector_card_num = Selector::parse(".cardNum").unwrap();
+            let card_no = match document.select(&selector_card_num).next() {
+                Some(card_no) => card_no.inner_html(),
+                None => "unknown".into()
+            };
+
+            let selector_card_name = Selector::parse(".cardName").unwrap();
+            let card_name = match document.select(&selector_card_name).next() {
+                Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+                None => ("unknown".into(), "unknown".into())
+            };
+
+            let selector_rarity = Selector::parse(".cardRarity").unwrap();
+            let card_rarity = match document.select(&selector_rarity).next() {
+                Some(card_rarity) => card_rarity.inner_html(),
+                None => "unknown rarity".into()
+            };
+
+            let selector_artist = Selector::parse(".cardImg p span").unwrap();
+            let artist = match document.select(&selector_artist).next() {
+                Some(artist) => artist.inner_html(),
+                None => "unknown artist".into()
+            };
+
+            let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+            let mut card_data: Vec<String> = Vec::new();
+            for element in document.select(&selector_card_data) {
+                card_data.push(element.inner_html());
+            }
+
+            let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+            let card_skill: String = match document.select(&selector_card_skill).next() {
+                Some(card_skill) => card_skill.inner_html(),
+                None => "No skill".into()
+            };
+
+            Self {
+                no: card_no,
+                name: card_name.0,
+                pronounce: card_name.1,
+                artist,
+                card_type: CardType::Lrig,
+                color: card_data[2].clone(),
+                level: OptionString::from_string(card_data[3].clone()),
+                cost: OptionString::from_string(card_data[4].clone()),
+                limit: OptionString::from_string(card_data[6].clone()),
+                // power: OptionString::from_string(card_data[7].clone()),
+                user: OptionString::from_string(card_data[1].clone()),
+                // time: OptionString::from_string(card_data[9].clone()),
+                story: parse_story(card_data[11].clone().trim().to_string()),
+                format: Format::DivaSelection,
+                rarity: card_rarity,
+                skill: parse_card_skill(card_skill),
+            }
+        }
+    }
+
+    impl Display for Lrig {
+        fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+            write!(f, "NO.\t:{}\n", self.no)?;
+            write!(f, "Name\t:{}\n", self.name)?;
+            write!(f, "読み\t:{}\n", self.pronounce)?;
+            write!(f, "絵\t:{}\n", self.artist)?;
+            write!(f, "Type\t:{}\n", self.card_type)?;
+            write!(f, "色\t:{}\n", self.color)?;
+            write!(f, "レベル\t:{}\n", self.level)?;
+            write!(f, "グロウコスト\t:{}\n", self.cost)?;
+            write!(f, "リミット\t:{}\n", self.limit)?;
+            // write!(f, "パワー\t:{}\n", self.power)?;
+            write!(f, "ルリグタイプ\t:{}\n", self.user)?;
+            write!(f, "ストーリー\t:{}\n", self.story)?;
+            write!(f, "フォーマット\t:{}\n", self.format)?;
+            write!(f, "レアリティ\t:{}\n", self.rarity)?;
+            write!(f, "テキスト\t:{}\n", self.skill)?;
+            write!(f, "")
+        }
+    }
+
+
     fn parse_card_skill(source: String) -> Skills {
         let re_br = Regex::new(r"<br\s?>").unwrap();
 
@@ -712,6 +842,7 @@ pub mod wixoss {
             (r"（シグニは覚醒すると場にあるかぎり覚醒状態になる）", "*AWAKE*"),
             (r"ガードアイコン", "*GUARD ICON*"),
             (r"（凍結されたシグニは次の自分のアップフェイズにアップしない）", "*FROZEN*"),
+            (r"（フェゾーネマジックは５種類ある）", "*FESONE MAGIC*"),
         ];
         let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
             let re = Regex::new(pat.0).unwrap();
