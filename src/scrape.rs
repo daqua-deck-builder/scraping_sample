@@ -1001,7 +1001,7 @@ pub mod wixoss {
     }
 
     fn split_by_break(html: String) -> Vec<String> {
-        html.split("<br>")
+        html.replace("\n", "").split("<br>")
             .map(|s| s.to_string())
             .collect()
     }
