@@ -22,6 +22,7 @@ pub enum CardFeature {
     Charge,
     EnerAttack,
     Trash,
+    Ener,
     PowerUp,
     PowerDown,
     Bounce,
@@ -34,6 +35,7 @@ pub enum CardFeature {
     OnArts,
     OnPiece,
     OnBanish,
+    Banish,
     Guard,
     OnGuard,
     AttackNoEffect,
@@ -53,6 +55,8 @@ pub enum CardFeature {
     // アークゲイン
     TopCheck,
     BottomCheck,
+    Barrier,
+    MultiEner
 }
 
 impl Display for CardFeature {
@@ -76,7 +80,8 @@ impl Display for CardFeature {
             CardFeature::Up => "アップ",
             CardFeature::Charge => "エナチャージ",
             CardFeature::EnerAttack => "エナ破壊",
-            CardFeature::Trash => "トラッシュ",
+            CardFeature::Trash => "トラッシュ送り",
+            CardFeature::Ener => "エナ送り",
             CardFeature::PowerUp => "パワーアップ",
             CardFeature::PowerDown => "パワーダウン",
             CardFeature::Bounce => "バウンス",
@@ -89,10 +94,11 @@ impl Display for CardFeature {
             CardFeature::OnArts => "アーツ使用時",
             CardFeature::OnPiece => "ピース使用時",
             CardFeature::OnBanish => "バニッシュした時",
+            CardFeature::Banish => "バニッシュ",
             CardFeature::Guard => "ガード",
             CardFeature::OnGuard => "ガードした時",
             CardFeature::AttackNoEffect => "アタック無効",
-            CardFeature::OnAttack => "アタックした時",
+            CardFeature::OnAttack => "アタック時",
             CardFeature::OnAttackStart => "アタック開始時",
             CardFeature::OnTouch => "対象になった時",
             CardFeature::Awake => "覚醒",
@@ -101,13 +107,15 @@ impl Display for CardFeature {
             CardFeature::AddLife => "ライフクロス追加",
             CardFeature::OnBurst => "ライフバースト発動時",
             CardFeature::LifeTrash => "ライフクロストラッシュ送り",
-            CardFeature::OnLifeCrush => "クラッシュされた時",
+            CardFeature::OnLifeCrush => "クラッシュ時",
             CardFeature::Position => "シグニゾーン移動",
             CardFeature::Vanilla => "能力を持たない",
             CardFeature::Untouchable => "効果を受けない", // アークゲイン
             CardFeature::TopCheck => "トップ確認",
             CardFeature::BottomCheck => "ボトム確認",
-            _ => ""
+            CardFeature::Barrier => "バリア獲得",
+            CardFeature::MultiEner => "マルチエナ",
+            _ => "未処理フィーチャー"
         };
         write!(f, "{}", label)
     }
