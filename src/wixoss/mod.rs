@@ -546,7 +546,7 @@ impl Display for Signi {
         write!(f, "ストーリー\t:{}\n", self.story)?;
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト\t:{}\n", self.skill)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
         write!(f, "")
     }
 }
@@ -673,7 +673,7 @@ impl Display for Spell {
         write!(f, "ストーリー\t:{}\n", self.story)?;
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト\t:{}\n", self.skill)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
         write!(f, "")
     }
 }
@@ -802,7 +802,7 @@ impl Display for Lrig {
         write!(f, "ストーリー\t:{}\n", self.story)?;
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト\t:{}\n", self.skill)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
         write!(f, "")
     }
 }
@@ -931,7 +931,7 @@ impl Display for LrigAssist {
         write!(f, "ストーリー\t:{}\n", self.story)?;
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト\t:{}\n", self.skill)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
         write!(f, "")
     }
 }
