@@ -152,7 +152,7 @@ fn main() {
     "##.into();
 
     let piece = Piece::from_source(source);
-    let card: Card = piece.into();
+    // let card: Card = piece.into();
     // println!("{}", Into::<Card>::into(piece));
-    println!("{}", card);
+    println!("{}", &piece);
 }

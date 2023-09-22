@@ -328,6 +328,28 @@ impl WixossCard for Piece {
     }
 }
 
+impl Display for Piece {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "NO.\t:{}\n", self.no)?;
+        write!(f, "Name\t:{}\n", self.name)?;
+        write!(f, "読み\t:{}\n", self.pronounce)?;
+        write!(f, "絵\t:{}\n", self.artist)?;
+        write!(f, "Type\t:{}\n", self.card_type)?;
+        // write!(f, "種族\t:{}\n", self.klass)?;
+        write!(f, "色\t:{}\n", self.color)?;
+        // write!(f, "レベル\t:{}\n", self.level)?;
+        // write!(f, "リミット\t:{}\n", self.limit)?;
+        // write!(f, "パワー\t:{}\n", self.power)?;
+        write!(f, "限定\t:{}\n", self.user)?;
+        write!(f, "ストーリー\t:{}\n", self.story)?;
+        write!(f, "フォーマット\t:{}\n", self.format)?;
+        write!(f, "レアリティ\t:{}\n", self.rarity)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        write!(f, "")
+    }
+}
+
 #[derive(Debug)]
 pub struct PieceRelay {
     no: String,
@@ -436,6 +458,29 @@ impl WixossCard for PieceRelay {
         }
     }
 }
+
+impl Display for PieceRelay {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "NO.\t:{}\n", self.no)?;
+        write!(f, "Name\t:{}\n", self.name)?;
+        write!(f, "読み\t:{}\n", self.pronounce)?;
+        write!(f, "絵\t:{}\n", self.artist)?;
+        write!(f, "Type\t:{}\n", self.card_type)?;
+        // write!(f, "種族\t:{}\n", self.klass)?;
+        write!(f, "色\t:{}\n", self.color)?;
+        // write!(f, "レベル\t:{}\n", self.level)?;
+        // write!(f, "リミット\t:{}\n", self.limit)?;
+        // write!(f, "パワー\t:{}\n", self.power)?;
+        write!(f, "限定\t:{}\n", self.user)?;
+        write!(f, "ストーリー\t:{}\n", self.story)?;
+        write!(f, "フォーマット\t:{}\n", self.format)?;
+        write!(f, "レアリティ\t:{}\n", self.rarity)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        write!(f, "")
+    }
+}
+
 
 #[derive(Debug)]
 pub struct Signi {
@@ -568,6 +613,7 @@ impl Display for Signi {
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
         write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -700,6 +746,7 @@ impl Display for Spell {
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
         write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -834,6 +881,7 @@ impl Display for Lrig {
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
         write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }

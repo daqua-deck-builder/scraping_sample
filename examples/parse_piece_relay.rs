@@ -136,6 +136,6 @@ fn main() {
     "##.into();
 
     let piece = PieceRelay::from_source(source);
-    let card: Card = piece.into();
-    println!("{}", card);
+    // let card: Card = piece.into();
+    println!("{}", piece);
 }
