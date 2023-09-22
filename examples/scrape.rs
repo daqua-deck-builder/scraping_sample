@@ -1,4 +1,4 @@
-use scraping_sample::scrape::{
+use scraping_sample::{
     try_mkdir,
     ProductType,
     collect_card_detail_links,

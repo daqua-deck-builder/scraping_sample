@@ -9,7 +9,7 @@ use std::io::prelude::*;
 use async_recursion::async_recursion;
 use serde::Deserialize;
 use serde_qs;
-use scraping_sample::scrape::wixoss::{LrigAssist, WixossCard, Card, CardType};
+use scraping_sample::wixoss::{LrigAssist, WixossCard, Card, CardType};
 
 fn main() {
     let source: String = r##"

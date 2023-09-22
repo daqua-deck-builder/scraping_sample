@@ -1,4 +1,4 @@
-use scraping_sample::scrape::{
+use scraping_sample::{
     parse_card_url,
     CardQuery,
 };
