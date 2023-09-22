@@ -1,6 +1,10 @@
+mod constants;
+
+use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
+use crate::wixoss::constants::CardFeature;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum CardType {
@@ -161,11 +165,12 @@ pub struct Card {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Display for Card {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n{}",
+        write!(f, "{} {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}\n{}\n{}",
                self.no,
                self.name,
                self.pronounce,
@@ -182,7 +187,8 @@ impl Display for Card {
                self.story,
                self.format,
                self.rarity,
-               self.skill
+               self.skill,
+               self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", ")
         )
     }
 }
@@ -232,6 +238,7 @@ pub struct Piece {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for Piece {
@@ -254,6 +261,7 @@ impl Into<Card> for Piece {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
         }
     }
 }
@@ -299,6 +307,7 @@ impl WixossCard for Piece {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
 
         Self {
             no: card_no,
@@ -313,7 +322,8 @@ impl WixossCard for Piece {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill.clone()),
+            skill,
+            features,
         }
     }
 }
@@ -336,6 +346,7 @@ pub struct PieceRelay {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for PieceRelay {
@@ -358,6 +369,8 @@ impl Into<Card> for PieceRelay {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
+
         }
     }
 }
@@ -403,6 +416,8 @@ impl WixossCard for PieceRelay {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
         Self {
             no: card_no,
             name: card_name.0,
@@ -416,7 +431,8 @@ impl WixossCard for PieceRelay {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill),
+            skill,
+            features,
         }
     }
 }
@@ -441,6 +457,7 @@ pub struct Signi {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for Signi {
@@ -463,6 +480,7 @@ impl Into<Card> for Signi {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
         }
     }
 }
@@ -508,6 +526,8 @@ impl WixossCard for Signi {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
         Self {
             no: card_no,
             name: card_name.0,
@@ -525,7 +545,8 @@ impl WixossCard for Signi {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill),
+            skill,
+            features,
         }
     }
 }
@@ -570,6 +591,7 @@ pub struct Spell {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for Spell {
@@ -592,6 +614,7 @@ impl Into<Card> for Spell {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
         }
     }
 }
@@ -637,6 +660,8 @@ impl WixossCard for Spell {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
         Self {
             no: card_no,
             name: card_name.0,
@@ -653,7 +678,8 @@ impl WixossCard for Spell {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill),
+            skill,
+            features,
         }
     }
 }
@@ -698,6 +724,7 @@ pub struct Lrig {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for Lrig {
@@ -720,6 +747,7 @@ impl Into<Card> for Lrig {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
         }
     }
 }
@@ -765,6 +793,8 @@ impl WixossCard for Lrig {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
         Self {
             no: card_no,
             name: card_name.0,
@@ -781,7 +811,8 @@ impl WixossCard for Lrig {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill),
+            skill,
+            features,
         }
     }
 }
@@ -826,6 +857,7 @@ pub struct LrigAssist {
     format: Format,
     rarity: String,
     skill: Skills,
+    features: HashSet<CardFeature>,
 }
 
 impl Into<Card> for LrigAssist {
@@ -848,6 +880,7 @@ impl Into<Card> for LrigAssist {
             format: self.format.clone(),
             rarity: self.rarity.clone(),
             skill: self.skill.clone(),
+            features: self.features.clone(),
         }
     }
 }
@@ -893,6 +926,8 @@ impl WixossCard for LrigAssist {
             None => "No skill".into()
         };
 
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
         Self {
             no: card_no,
             name: card_name.0,
@@ -909,7 +944,8 @@ impl WixossCard for LrigAssist {
             story: parse_story(card_data[11].clone().trim().to_string()),
             format: Format::DivaSelection,
             rarity: card_rarity,
-            skill: parse_card_skill(card_skill),
+            skill,
+            features,
         }
     }
 }
@@ -932,44 +968,78 @@ impl Display for LrigAssist {
         write!(f, "フォーマット\t:{}\n", self.format)?;
         write!(f, "レアリティ\t:{}\n", self.rarity)?;
         write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
 
-fn parse_card_skill(source: String) -> Skills {
+fn parse_card_skill(source: String) -> (Skills, HashSet<CardFeature>) {
     let re_br = Regex::new(r"<br\s?>").unwrap();
+    let mut features: HashSet<CardFeature> = HashSet::new();
+    // Skills::from_vec(
+    let a = re_br
+        .replace_all(&source, "\n")
+        .split("\n")
+        .map(|line| line.trim().to_string())
+        .map(|line| {
+            let (l, features_detected) = rule_explain_to_feature(line);
+            features.extend(features_detected);
+            l
+        })
+        .filter(|line| !line.is_empty())  // この行を追加して空の行を除去する
+        .collect();
+    // )
 
-    Skills::from_vec(
-        re_br
-            .replace_all(&source, "\n")
-            .split("\n")
-            .map(|line| line.trim().to_string())
-            .map(remove_rule_explain)
-            .filter(|line| !line.is_empty())  // この行を追加して空の行を除去する
-            .collect()
-    )
+    (Skills::from_vec(a), features)
 }
 
-fn remove_rule_explain(text: String) -> String {
+macro_rules! features {
+    ($($feature:expr),* $(,)?) => {
+        {
+            let mut set = HashSet::new();
+            $(
+                set.insert($feature);
+            )*
+            set
+        }
+    };
+}
+
+fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
     let text = replace_img_with_alt(text);
 
+    let mut features: Vec<CardFeature> = Vec::new();
+
     let remove_patterns = vec![
-        (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", "*EXCEED*"),
-        (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", "*DREAM TEAM*"),
-        (r"（あなたの場にいるルリグ３体がこの条件を満たす）", "*TEAM*"),
-        (r"（シグニは覚醒すると場にあるかぎり覚醒状態になる）", "*AWAKE*"),
-        (r"ガードアイコン", "*GUARD ICON*"),
-        (r"（凍結されたシグニは次の自分のアップフェイズにアップしない）", "*FROZEN*"),
-        (r"（フェゾーネマジックは５種類ある）", "*FESONE MAGIC*"),
-        (r"（【出】能力の：の左側はコストである。コストを支払わず発動しないことを選んでもよい）", "*CIP COST*"),
+        (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", true, "*EXCEED*", features![CardFeature::Exceed]),
+        (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", true, "*DREAM TEAM*", features![]),
+        (r"（あなたの場にいるルリグ３体がこの条件を満たす）", true, "*TEAM*", features![]),
+        (r"（シグニは覚醒すると場にあるかぎり覚醒状態になる）", true, "*AWAKE*", features![CardFeature::Awake]),
+        (r"ガードアイコン", true, "*GUARD ICON*", features![CardFeature::Guard]),
+        (r"（凍結されたシグニは次の自分のアップフェイズにアップしない）", true, "*FROZEN*", features![CardFeature::Freeze]),
+        (r"（フェゾーネマジックは５種類ある）", true, "*FESONE MAGIC*", features![]),
+        (r"（【出】能力の：の左側はコストである。コストを支払わず発動しないことを選んでもよい）", true, "*CIP COST*", features![]),
+        (r"捨てさせる。", false, "*HAND DESTRUCTION*", features![CardFeature::DiscardOpponent]),
+        (r"見ないで選び、捨てさせる。", false, "*RANDOM HAND DESTRUCTION*", features![CardFeature::RandomDiscard]),
+        (r"ダウンする。", false, "*DOWN*", features![CardFeature::Down]),
     ];
     let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
         let re = Regex::new(pat.0).unwrap();
-        re.replace_all(&current_text, pat.1).to_string()
+
+        if re.is_match(&current_text) {
+            features.extend(pat.3.iter().cloned());
+        }
+
+        if pat.1 {
+            re.replace_all(&current_text, pat.2).to_string()
+        } else {
+            current_text
+        }
     });
 
-    replaced_text
+    (replaced_text, features)
 }
+
 
 fn replace_img_with_alt(html: String) -> String {
     let re = Regex::new(r#"<img[^>]*alt="([^"]*)"[^>]*>"#).unwrap();
