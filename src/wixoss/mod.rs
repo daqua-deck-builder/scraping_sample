@@ -1332,7 +1332,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
 
     let mut features: Vec<CardFeature> = Vec::new();
 
-    let remove_patterns = vec![
+    let remove_patterns: Vec<(&str, bool, &str, HashSet<CardFeature>)> = vec![
         (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", true, "*EXCEED*", features![CardFeature::Exceed]),
         (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", true, "*DREAM TEAM*", features![]),
         (r"（あなたの場にいるルリグ３体がこの条件を満たす）", true, "*TEAM*", features![]),
@@ -1366,6 +1366,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"ルリグトラッシュに置", false, "*ENER ATTACK*", features![CardFeature::LrigTrash]),
         (r"アタックフェイズ開始時", false, "*ON ATTACK START*", features![CardFeature::OnAttackStart]),
     ];
+
     let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
         let re = Regex::new(pat.0).unwrap();
 
