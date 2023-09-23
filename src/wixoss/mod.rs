@@ -320,7 +320,7 @@ impl WixossCard for Piece {
             user: OptionString::from_string(card_data[8].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -452,7 +452,7 @@ impl WixossCard for PieceRelay {
             user: OptionString::from_string(card_data[8].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -590,7 +590,7 @@ impl WixossCard for Signi {
             user: OptionString::from_string(card_data[8].clone()),
             // time: OptionString::from_string(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -724,7 +724,7 @@ impl WixossCard for Spell {
             user: OptionString::from_string(card_data[8].clone()),
             // time: OptionString::from_string(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -859,7 +859,7 @@ impl WixossCard for Lrig {
             user: OptionString::from_string(card_data[1].clone()),
             // time: OptionString::from_string(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -993,7 +993,7 @@ impl WixossCard for LrigAssist {
             user: OptionString::from_string(card_data[1].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -1126,7 +1126,7 @@ impl WixossCard for Arts {
             user: OptionString::from_string(card_data[1].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -1263,7 +1263,7 @@ impl WixossCard for Resona {
             user: OptionString::from_string(card_data[8].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
-            format: Format::DivaSelection,
+            format: parse_format(card_data[10].clone()),
             rarity: card_rarity,
             skill,
             features,
@@ -1294,6 +1294,7 @@ impl Display for Resona {
         write!(f, "")
     }
 }
+
 fn parse_card_skill(source: String) -> (Skills, HashSet<CardFeature>) {
     let re_br = Regex::new(r"<br\s?>").unwrap();
     let mut features: HashSet<CardFeature> = HashSet::new();
@@ -1408,4 +1409,12 @@ fn split_by_break(html: String) -> Vec<String> {
 
 fn flatten_break(html: String) -> String {
     html.replace("\n", "").replace("<br>", "")
+}
+
+fn parse_format(html: String) -> Format {
+    match html.as_str() {
+        _ if html.contains("ディーヴァアイコン") => Format::DivaSelection,
+        _ if html.contains("キーアイコン") => Format::KeySelection,
+        _ => Format::AllStar,
+    }
 }
