@@ -57,7 +57,8 @@ pub enum CardFeature {
     BottomCheck,
     Barrier,
     MultiEner,
-    LrigTrash
+    LrigTrash,
+    Charm,
 }
 
 impl Display for CardFeature {
@@ -117,6 +118,7 @@ impl Display for CardFeature {
             CardFeature::Barrier => "バリア獲得",
             CardFeature::MultiEner => "マルチエナ",
             CardFeature::LrigTrash => "ルリグトラッシュ",
+            CardFeature::Charm => "チャーム",
             _ => "未処理フィーチャー"
         };
         write!(f, "{}", label)
