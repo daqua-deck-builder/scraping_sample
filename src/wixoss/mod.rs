@@ -316,7 +316,7 @@ impl WixossCard for Piece {
             artist,
             card_type: CardType::Piece,
             color: card_data[2].clone(),
-            cost: OptionString::from_string(card_data[5].clone()),
+            cost: OptionString::from_string(flatten_break( card_data[5].clone())),
             user: OptionString::from_string(card_data[8].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
@@ -337,6 +337,7 @@ impl Display for Piece {
         write!(f, "Type\t:{}\n", self.card_type)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
         write!(f, "色\t:{}\n", self.color)?;
+        write!(f, "コスト\t:{}\n", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
@@ -447,7 +448,7 @@ impl WixossCard for PieceRelay {
             artist,
             card_type: CardType::PieceRelay,
             color: card_data[2].clone(),
-            cost: OptionString::from_string(card_data[5].clone()),
+            cost: OptionString::from_string(flatten_break( card_data[5].clone())),
             user: OptionString::from_string(card_data[8].clone()),
             time: split_by_break(card_data[9].clone()),
             story: parse_story(card_data[11].clone().trim().to_string()),
@@ -468,6 +469,7 @@ impl Display for PieceRelay {
         write!(f, "Type\t:{}\n", self.card_type)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
         write!(f, "色\t:{}\n", self.color)?;
+        write!(f, "コスト\t:{}\n", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
@@ -716,7 +718,7 @@ impl WixossCard for Spell {
             card_type: CardType::Spell,
             color: card_data[2].clone(),
             // level: OptionString::from_string(card_data[3].clone()),
-            cost: OptionString::from_string(card_data[5].clone()),
+            cost: OptionString::from_string(flatten_break( card_data[5].clone())),
             // limit: OptionString::from_string(card_data[6].clone()),
             // power: OptionString::from_string(card_data[7].clone()),
             user: OptionString::from_string(card_data[8].clone()),
@@ -738,6 +740,7 @@ impl Display for Spell {
         write!(f, "絵\t:{}\n", self.artist)?;
         write!(f, "Type\t:{}\n", self.card_type)?;
         write!(f, "色\t:{}\n", self.color)?;
+        write!(f, "コスト\t:{}\n", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "専用上限\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
@@ -850,7 +853,7 @@ impl WixossCard for Lrig {
             card_type: CardType::Lrig,
             color: card_data[2].clone(),
             level: OptionString::from_string(card_data[3].clone()),
-            cost: OptionString::from_string(card_data[4].clone()),
+            cost: OptionString::from_string(flatten_break( card_data[4].clone())),
             limit: OptionString::from_string(card_data[6].clone()),
             // power: OptionString::from_string(card_data[7].clone()),
             user: OptionString::from_string(card_data[1].clone()),
@@ -984,7 +987,7 @@ impl WixossCard for LrigAssist {
             card_type: CardType::LrigAssist,
             color: card_data[2].clone(),
             level: OptionString::from_string(card_data[3].clone()),
-            cost: OptionString::from_string(card_data[4].clone()),
+            cost: OptionString::from_string(flatten_break( card_data[4].clone())),
             limit: OptionString::from_string(card_data[6].clone()),
             // power: OptionString::from_string(card_data[7].clone()),
             user: OptionString::from_string(card_data[1].clone()),
