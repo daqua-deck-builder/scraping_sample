@@ -302,12 +302,12 @@ impl WixossCard for Piece {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -434,12 +434,12 @@ impl WixossCard for PieceRelay {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -568,12 +568,12 @@ impl WixossCard for Signi {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -703,12 +703,12 @@ impl WixossCard for Spell {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -838,12 +838,12 @@ impl WixossCard for Lrig {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -972,12 +972,12 @@ impl WixossCard for LrigAssist {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -1108,12 +1108,12 @@ impl WixossCard for Arts {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -1240,12 +1240,12 @@ impl WixossCard for Resona {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         // todo: 出現条件とタイミングがSkillにあるので詳細にパースする必要あり
 
@@ -1378,12 +1378,12 @@ impl WixossCard for ResonaCraft {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         // todo: 出現条件とタイミングがSkillにあるので詳細にパースする必要あり
 
@@ -1516,12 +1516,12 @@ impl WixossCard for ArtsCraft {
         }
 
         let selector_card_skill = Selector::parse(".cardSkill").unwrap();
-        let card_skill: String = match document.select(&selector_card_skill).next() {
-            Some(card_skill) => card_skill.inner_html(),
-            None => "No skill".into()
-        };
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
 
-        let (skill, features) = parse_card_skill(card_skill.clone());
+        let (skill, features) = parse_card_skill(card_skills.clone());
 
         Self {
             no: card_no,
@@ -1566,24 +1566,28 @@ impl Display for ArtsCraft {
 }
 
 
-fn parse_card_skill(source: String) -> (Skills, HashSet<CardFeature>) {
+fn parse_card_skill(source: Vec<String>) -> (Skills, HashSet<CardFeature>) {
     let re_br = Regex::new(r"<br\s?>").unwrap();
     let mut features: HashSet<CardFeature> = HashSet::new();
-    // Skills::from_vec(
-    let a = re_br
-        .replace_all(&source, "\n")
-        .split("\n")
-        .map(|line| line.trim().to_string())
-        .map(|line| {
-            let (l, features_detected) = rule_explain_to_feature(line);
-            features.extend(features_detected);
-            l
-        })
-        .filter(|line| !line.is_empty())  // この行を追加して空の行を除去する
-        .collect();
-    // )
+    let mut all_skills: Vec<String> = Vec::new();
 
-    (Skills::from_vec(a), features)
+    for s in source {
+        let skills_for_this_string: Vec<String> = re_br
+            .replace_all(&s, "\n")
+            .split("\n")
+            .map(|line| line.trim().to_string())
+            .map(|line| {
+                let (l, features_detected) = rule_explain_to_feature(line);
+                features.extend(features_detected);
+                l
+            })
+            .filter(|line| !line.is_empty())  // 空の行を除去
+            .collect();
+
+        all_skills.extend(skills_for_this_string);
+    }
+
+    (Skills::from_vec(all_skills), features)
 }
 
 macro_rules! features {
@@ -1606,6 +1610,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
     let remove_patterns: Vec<(&str, bool, &str, HashSet<CardFeature>)> = vec![
         (r"『", true, "", features![]),  // アクセのみ？
         (r"』", true, "", features![]),  // アクセのみ？
+        (r"ライフバースト：", true, "LB:", features![CardFeature::LifeBurst]),
         (r"（対戦相手のライフクロスが１枚以上ある場合、ライフクロス１枚をクラッシュし、０枚の場合、あなたはゲームに勝利する）", true, "", features![CardFeature::Damage]),
         (r"（【ランサー】を持つシグニがバトルでシグニをバニッシュしたとき、対戦相手のライフクロスを１枚クラッシュする）", true, "", features![CardFeature::Lancer]),
         (r"（このクラフトは効果以外によっては場に出せない）", true, "", features![CardFeature::Craft]),
@@ -1645,6 +1650,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"ライフクロスに加える", false, "*ADD LIFE*", features![CardFeature::AddLife]),
         (r"ランサー", false, "*LANCER*", features![CardFeature::Lancer]),
         (r"ライフクロスを１枚クラッシュする", false, "*CRUSH*", features![CardFeature::LifeCrush]),
+        (r"対戦相手のライフクロス１枚をクラッシュする。", false, "*CRUSH*", features![CardFeature::LifeCrush]),
         (r"対戦相手にダメージを与える。", false, "*DAMAGE*", features![CardFeature::Damage]),
     ];
 
