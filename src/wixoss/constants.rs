@@ -48,6 +48,8 @@ pub enum CardFeature {
     AddLife,
     OnBurst,
     LifeTrash,
+    LifeCrush,
+    Damage,
     OnLifeCrush,
     Position,
     Vanilla,
@@ -59,6 +61,8 @@ pub enum CardFeature {
     MultiEner,
     LrigTrash,
     Charm,
+    Craft,
+    Acce,
 }
 
 impl Display for CardFeature {
@@ -109,6 +113,8 @@ impl Display for CardFeature {
             CardFeature::AddLife => "ライフクロス追加",
             CardFeature::OnBurst => "ライフバースト発動時",
             CardFeature::LifeTrash => "ライフクロストラッシュ送り",
+            CardFeature::LifeCrush => "クラッシュ",
+            CardFeature::Damage => "ダメージ",
             CardFeature::OnLifeCrush => "クラッシュ時",
             CardFeature::Position => "シグニゾーン移動",
             CardFeature::Vanilla => "能力を持たない",
@@ -119,6 +125,8 @@ impl Display for CardFeature {
             CardFeature::MultiEner => "マルチエナ",
             CardFeature::LrigTrash => "ルリグトラッシュ",
             CardFeature::Charm => "チャーム",
+            CardFeature::Craft => "クラフト",
+            CardFeature::Acce => "アクセ",
             _ => "未処理フィーチャー"
         };
         write!(f, "{}", label)

@@ -1296,6 +1296,144 @@ impl Display for Resona {
 }
 
 #[derive(Debug)]
+pub struct ResonaCraft {
+    no: String,
+    name: String,
+    pronounce: String,
+    artist: String,
+    card_type: CardType,
+    klass: OptionString,
+    color: String,
+    level: OptionString,
+    cost: OptionString,
+    // limit: OptionString,
+    power: OptionString,
+    user: OptionString,
+    time: Vec<String>,
+    story: OptionString,
+    format: Format,
+    rarity: String,
+    skill: Skills,
+    features: HashSet<CardFeature>,
+}
+
+impl Into<Card> for ResonaCraft {
+    fn into(self) -> Card {
+        Card {
+            no: self.no.clone(),
+            name: self.name.clone(),
+            pronounce: self.pronounce.clone(),
+            artist: self.artist.clone(),
+            card_type: self.card_type.clone(),
+            klass: self.klass.clone(),
+            color: self.color.clone(),
+            level: self.level.clone(),
+            cost: self.cost.clone(),
+            limit: OptionString::empty(),
+            power: self.power.clone(),
+            user: self.user.clone(),
+            time: self.time.clone(),
+            story: self.story.clone(),
+            format: self.format.clone(),
+            rarity: self.rarity.clone(),
+            skill: self.skill.clone(),
+            features: self.features.clone(),
+        }
+    }
+}
+
+impl WixossCard for ResonaCraft {
+    fn from_source(source: String) -> Self {
+        let document: Html = Html::parse_document(&source);
+
+        let selector_card_num = Selector::parse(".cardNum").unwrap();
+        let card_no = match document.select(&selector_card_num).next() {
+            Some(card_no) => card_no.inner_html(),
+            None => "unknown".into()
+        };
+
+        let selector_card_name = Selector::parse(".cardName").unwrap();
+        let card_name = match document.select(&selector_card_name).next() {
+            Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+            None => ("unknown".into(), "unknown".into())
+        };
+
+        let selector_rarity = Selector::parse(".cardRarity").unwrap();
+        let card_rarity = match document.select(&selector_rarity).next() {
+            Some(card_rarity) => card_rarity.inner_html(),
+            None => "unknown rarity".into()
+        };
+
+        let selector_artist = Selector::parse(".cardImg p span").unwrap();
+        let artist = match document.select(&selector_artist).next() {
+            Some(artist) => artist.inner_html(),
+            None => "unknown artist".into()
+        };
+
+        let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+        let mut card_data: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_data) {
+            card_data.push(element.inner_html());
+        }
+
+        let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+        let card_skill: String = match document.select(&selector_card_skill).next() {
+            Some(card_skill) => card_skill.inner_html(),
+            None => "No skill".into()
+        };
+
+        let (skill, features) = parse_card_skill(card_skill.clone());
+
+        // todo: 出現条件とタイミングがSkillにあるので詳細にパースする必要あり
+
+        Self {
+            no: card_no,
+            name: card_name.0,
+            pronounce: card_name.1,
+            artist,
+            card_type: CardType::ResonaCraft,
+            klass: OptionString::from_string(card_data[1].clone()),
+            color: card_data[2].clone(),
+            cost: OptionString::from_string(flatten_break(card_data[5].clone())),
+            level: OptionString::from_string(card_data[3].clone()),
+            power: OptionString::from_string(card_data[7].clone()),
+            user: OptionString::from_string(card_data[8].clone()),
+            time: split_by_break(card_data[9].clone()),
+            story: parse_story(card_data[11].clone().trim().to_string()),
+            format: parse_format(card_data[10].clone()),
+            rarity: card_rarity,
+            skill,
+            features,
+        }
+    }
+}
+
+impl Display for ResonaCraft {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "NO.\t:{}\n", self.no)?;
+        write!(f, "Name\t:{}\n", self.name)?;
+        write!(f, "読み\t:{}\n", self.pronounce)?;
+        write!(f, "絵\t:{}\n", self.artist)?;
+        write!(f, "Type\t:{}\n", self.card_type)?;
+        write!(f, "色\t:{}\n", self.color)?;
+        write!(f, "種族\t:{}\n", self.klass)?;
+        write!(f, "レベル\t:{}\n", self.level)?;
+        write!(f, "コスト\t:{}\n", self.cost)?;
+        // write!(f, "リミット\t:{}\n", self.limit)?;
+        write!(f, "パワー\t:{}\n", self.power)?;
+        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
+        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
+        write!(f, "ストーリー\t:{}\n", self.story)?;
+        write!(f, "フォーマット\t:{}\n", self.format)?;
+        write!(f, "レアリティ\t:{}\n", self.rarity)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        write!(f, "")
+    }
+}
+
+#[derive(Debug)]
 pub struct ArtsCraft {
     no: String,
     name: String,
@@ -1466,6 +1604,12 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
     let mut features: Vec<CardFeature> = Vec::new();
 
     let remove_patterns: Vec<(&str, bool, &str, HashSet<CardFeature>)> = vec![
+        (r"『", true, "", features![]),  // アクセのみ？
+        (r"』", true, "", features![]),  // アクセのみ？
+        (r"（【ランサー】を持つシグニがバトルでシグニをバニッシュしたとき、対戦相手のライフクロスを１枚クラッシュする）", true, "", features![CardFeature::Lancer]),
+        (r"（このクラフトは効果以外によっては場に出せない）", true, "", features![CardFeature::Craft]),
+        (r"アクセ", false, "*ACCE*", features![CardFeature::Acce]),
+        (r"（【アクセ】はシグニ１体に１枚までしか付けられない。このクラフトが付いているシグニが場を離れるとこのクラフトはゲームから除外される）", true, "", features![CardFeature::Acce]),
         (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", true, "*EXCEED*", features![CardFeature::Exceed]),
         (r"（【チーム】または【ドリームチーム】を持つピースはルリグデッキに合計１枚までしか入れられない）", true, "*DREAM TEAM*", features![]),
         (r"（あなたの場にいるルリグ３体がこの条件を満たす）", true, "*TEAM*", features![]),
@@ -1488,7 +1632,6 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"チャーム", false, "*CHARM*", features![CardFeature::Charm]),
         (r"ダブルクラッシュ", false, "*DOUBLE CRUSH*", features![CardFeature::DoubleCrush]),
         (r"トリプルクラッシュ", false, "*TRIPLE CRUSH*", features![CardFeature::TripleCrush]),
-        (r"ランサー", false, "*LANCER*", features![CardFeature::Lancer]),
         (r"Sランサー", false, "*S LANCER*", features![CardFeature::SLancer]),
         (r"バニッシュ", false, "*BANISH*", features![CardFeature::Banish]),
         (r"凍結する", false, "*FREEZE*", features![CardFeature::Freeze]),
@@ -1499,6 +1642,8 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"ルリグトラッシュに置", false, "*ENER ATTACK*", features![CardFeature::LrigTrash]),
         (r"アタックフェイズ開始時", false, "*ON ATTACK START*", features![CardFeature::OnAttackStart]),
         (r"ライフクロスに加える", false, "*ADD LIFE*", features![CardFeature::AddLife]),
+        (r"ランサー", false, "*LANCER*", features![CardFeature::Lancer]),
+        (r"ライフクロスを１枚クラッシュする", false, "*CRUSH*", features![CardFeature::LifeCrush]),
     ];
 
     let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
