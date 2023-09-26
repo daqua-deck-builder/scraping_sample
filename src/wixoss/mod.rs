@@ -1,10 +1,12 @@
-mod constants;
-
+#[macro_use]
+pub mod constants;
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
-use crate::wixoss::constants::CardFeature;
+use crate::features;
+use crate::wixoss::constants::constants::CardFeature;
+
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum CardType {
@@ -1590,17 +1592,6 @@ fn parse_card_skill(source: Vec<String>) -> (Skills, HashSet<CardFeature>) {
     (Skills::from_vec(all_skills), features)
 }
 
-macro_rules! features {
-    ($($feature:expr),* $(,)?) => {
-        {
-            let mut set = HashSet::new();
-            $(
-                set.insert($feature);
-            )*
-            set
-        }
-    };
-}
 
 fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
     let text = replace_img_with_alt(text);
