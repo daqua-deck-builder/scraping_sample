@@ -1606,6 +1606,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
     let remove_patterns: Vec<(&str, bool, &str, HashSet<CardFeature>)> = vec![
         (r"『", true, "", features![]),  // アクセのみ？
         (r"』", true, "", features![]),  // アクセのみ？
+        (r"（対戦相手のライフクロスが１枚以上ある場合、ライフクロス１枚をクラッシュし、０枚の場合、あなたはゲームに勝利する）", true, "", features![CardFeature::Damage]),
         (r"（【ランサー】を持つシグニがバトルでシグニをバニッシュしたとき、対戦相手のライフクロスを１枚クラッシュする）", true, "", features![CardFeature::Lancer]),
         (r"（このクラフトは効果以外によっては場に出せない）", true, "", features![CardFeature::Craft]),
         (r"アクセ", false, "*ACCE*", features![CardFeature::Acce]),
@@ -1644,6 +1645,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"ライフクロスに加える", false, "*ADD LIFE*", features![CardFeature::AddLife]),
         (r"ランサー", false, "*LANCER*", features![CardFeature::Lancer]),
         (r"ライフクロスを１枚クラッシュする", false, "*CRUSH*", features![CardFeature::LifeCrush]),
+        (r"対戦相手にダメージを与える。", false, "*DAMAGE*", features![CardFeature::Damage]),
     ];
 
     let replaced_text = remove_patterns.iter().fold(text, |current_text, pat| {
