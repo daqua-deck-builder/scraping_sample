@@ -1,5 +1,5 @@
 #[macro_use]
-use scraping_sample::wixoss::constants::constants::CardFeature;
+use scraping_sample::wixoss::constants::CardFeature;
 use std::collections::HashSet;
 use std::fmt::{Display};
 

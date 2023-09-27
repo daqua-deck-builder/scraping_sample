@@ -5,7 +5,7 @@ use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
 use crate::features;
-use crate::wixoss::constants::constants::CardFeature;
+use crate::wixoss::constants::CardFeature;
 
 
 #[derive(Debug, Clone, PartialEq)]
