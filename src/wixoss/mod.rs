@@ -6,6 +6,7 @@ use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
 use crate::features;
+use crate::wixoss::CardType::Unknown;
 use crate::wixoss::constants::CardFeature;
 
 
@@ -24,6 +25,7 @@ pub enum CardType {
     Piece,
     PieceRelay,
     Token,
+    Unknown
 }
 
 impl Display for CardType {
@@ -190,6 +192,34 @@ impl Display for Card {
                self.skill,
                self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", ")
         )
+    }
+}
+
+impl Card {
+    pub fn detect_card_type(text: &String) -> CardType {
+        let document: Html = Html::parse_document(&text);
+        let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+        let mut card_data: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_data) {
+            card_data.push(element.inner_html());
+        }
+
+        let text = card_data[0].clone();
+
+        match text.as_str() {
+            "シグニ" => CardType::Signi,
+            "ルリグ" => CardType::Lrig,
+            _ => CardType::Unknown
+        }
+    }
+
+    pub fn card_from_html(text: &String) -> Option<Self> {
+        match Self::detect_card_type(&text.clone()) {
+            CardType::Signi => Some(Signi::from_source(text.clone()).into()),
+            CardType::Spell => Some(Spell::from_source(text.clone()).into()),
+            _ => None
+        }
     }
 }
 
