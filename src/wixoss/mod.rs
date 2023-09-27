@@ -2035,6 +2035,7 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"がアタックしたとき", false, "*ON ATTACK*", features![CardFeature::OnAttack]),
         (r"アサシン", false, "*ASSASSIN*", features![CardFeature::Assassin]),
         (r"シャドウ", false, "*SHADOW*", features![CardFeature::Shadow]),
+        (r"【マルチエナ】", false, "*MULTI ENER*", features![CardFeature::MultiEner]),
         (r"チャーム", false, "*CHARM*", features![CardFeature::Charm]),
         (r"ダブルクラッシュ", false, "*DOUBLE CRUSH*", features![CardFeature::DoubleCrush]),
         (r"トリプルクラッシュ", false, "*TRIPLE CRUSH*", features![CardFeature::TripleCrush]),
