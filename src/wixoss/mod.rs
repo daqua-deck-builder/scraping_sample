@@ -5,10 +5,10 @@ use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 use crate::features;
 use crate::wixoss::constants::CardFeature;
-
+use serde::ser::SerializeSeq;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum CardType {
@@ -81,7 +81,7 @@ impl Display for Format {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct OptionString {
     value: Option<String>,
 }
@@ -97,6 +97,15 @@ impl OptionString {
 
     pub fn empty() -> Self {
         Self { value: None }
+    }
+}
+
+impl Serialize for OptionString {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        match &self.value {
+            Some(s) => serializer.serialize_str(s),
+            None => serializer.serialize_str(""),
+        }
     }
 }
 
@@ -132,7 +141,7 @@ impl Display for OptionInteger {
     }
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug)]
 struct Skills {
     value: Vec<String>,
 }
@@ -143,6 +152,18 @@ impl Skills {
     }
 }
 
+impl Serialize for Skills {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        let mut seq = serializer.serialize_seq(Some(self.value.len()))?;
+        for e in &self.value {
+            seq.serialize_element(e)?;
+        }
+        seq.end()
+
+        // let joined = self.value.join(",");
+        // serializer.serialize_str(&joined)
+    }
+}
 impl Display for Skills {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value.join("\n"))
