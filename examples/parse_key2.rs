@@ -1,4 +1,4 @@
-use scraping_sample::wixoss::{Key, WixossCard};
+use scraping_sample::wixoss::{Card, Key, WixossCard};
 
 fn main() {
     let source: String = r##"
@@ -136,9 +136,6 @@ fn main() {
     </html>
 
 "##.into();
-
-    let key = Key::from_source(source);
-    // let card: Card = piece.into();
-    // println!("{}", Into::<Card>::into(piece));
-    println!("{}", &key);
+    let card = Card::card_from_html(&String::from(source));
+    println!("{}", serde_json::to_string_pretty(&card).unwrap());
 }
