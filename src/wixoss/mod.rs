@@ -755,6 +755,138 @@ impl Display for Spell {
         write!(f, "")
     }
 }
+#[derive(Debug)]
+pub struct SpellCraft {
+    no: String,
+    name: String,
+    pronounce: String,
+    artist: String,
+    card_type: CardType,
+    color: String,
+    // level: OptionString,
+    cost: OptionString,
+    // limit: OptionString,
+    // power: OptionString,
+    user: OptionString,
+    // time: OptionString,
+    story: OptionString,
+    format: Format,
+    rarity: String,
+    skill: Skills,
+    features: HashSet<CardFeature>,
+}
+
+impl Into<Card> for SpellCraft {
+    fn into(self) -> Card {
+        Card {
+            no: self.no.clone(),
+            name: self.name.clone(),
+            pronounce: self.pronounce.clone(),
+            artist: self.artist.clone(),
+            card_type: self.card_type.clone(),
+            klass: OptionString::empty(),
+            color: self.color.clone(),
+            level: OptionString::empty(),
+            cost: self.cost.clone(),
+            limit: OptionString::empty(),
+            power: OptionString::empty(),
+            user: self.user.clone(),
+            time: Vec::new(),
+            story: self.story.clone(),
+            format: self.format.clone(),
+            rarity: self.rarity.clone(),
+            skill: self.skill.clone(),
+            features: self.features.clone(),
+        }
+    }
+}
+
+impl WixossCard for SpellCraft {
+    fn from_source(source: String) -> Self {
+        let document: Html = Html::parse_document(&source);
+
+        let selector_card_num = Selector::parse(".cardNum").unwrap();
+        let card_no = match document.select(&selector_card_num).next() {
+            Some(card_no) => card_no.inner_html(),
+            None => "unknown".into()
+        };
+
+        let selector_card_name = Selector::parse(".cardName").unwrap();
+        let card_name = match document.select(&selector_card_name).next() {
+            Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+            None => ("unknown".into(), "unknown".into())
+        };
+
+        let selector_rarity = Selector::parse(".cardRarity").unwrap();
+        let card_rarity = match document.select(&selector_rarity).next() {
+            Some(card_rarity) => card_rarity.inner_html(),
+            None => "unknown rarity".into()
+        };
+
+        let selector_artist = Selector::parse(".cardImg p span").unwrap();
+        let artist = match document.select(&selector_artist).next() {
+            Some(artist) => artist.inner_html(),
+            None => "unknown artist".into()
+        };
+
+        let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+        let mut card_data: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_data) {
+            card_data.push(element.inner_html());
+        }
+
+        let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
+
+        let (skill, features) = parse_card_skill(card_skills.clone());
+
+        Self {
+            no: card_no,
+            name: card_name.0,
+            pronounce: card_name.1,
+            artist,
+            card_type: CardType::SpellCraft,
+            color: card_data[2].clone(),
+            // level: OptionString::from_string(card_data[3].clone()),
+            cost: OptionString::from_string(flatten_break(card_data[5].clone())),
+            // limit: OptionString::from_string(card_data[6].clone()),
+            // power: OptionString::from_string(card_data[7].clone()),
+            user: OptionString::from_string(card_data[8].clone()),
+            // time: OptionString::from_string(card_data[9].clone()),
+            story: parse_story(card_data[11].clone().trim().to_string()),
+            format: parse_format(card_data[10].clone()),
+            rarity: card_rarity,
+            skill,
+            features,
+        }
+    }
+}
+
+impl Display for SpellCraft {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "NO.\t:{}\n", self.no)?;
+        write!(f, "Name\t:{}\n", self.name)?;
+        write!(f, "読み\t:{}\n", self.pronounce)?;
+        write!(f, "絵\t:{}\n", self.artist)?;
+        write!(f, "Type\t:{}\n", self.card_type)?;
+        write!(f, "色\t:{}\n", self.color)?;
+        write!(f, "コスト\t:{}\n", self.cost)?;
+        // write!(f, "レベル\t:{}\n", self.level)?;
+        // write!(f, "専用上限\t:{}\n", self.limit)?;
+        // write!(f, "パワー\t:{}\n", self.power)?;
+        write!(f, "限定\t:{}\n", self.user)?;
+        write!(f, "ストーリー\t:{}\n", self.story)?;
+        write!(f, "フォーマット\t:{}\n", self.format)?;
+        write!(f, "レアリティ\t:{}\n", self.rarity)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        write!(f, "")
+    }
+}
 
 
 #[derive(Debug)]
@@ -1605,6 +1737,8 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"（対戦相手のライフクロスが１枚以上ある場合、ライフクロス１枚をクラッシュし、０枚の場合、あなたはゲームに勝利する）", true, "", features![CardFeature::Damage]),
         (r"（【ランサー】を持つシグニがバトルでシグニをバニッシュしたとき、対戦相手のライフクロスを１枚クラッシュする）", true, "", features![CardFeature::Lancer]),
         (r"（このクラフトは効果以外によっては場に出せない）", true, "", features![CardFeature::Craft]),
+        (r"（このスペルはあなたのメインフェイズにルリグデッキから使用できる）", true, "", features![CardFeature::Craft]),
+        (r"（クラフトであるスペルは、使用後にゲームから除外される）", true, "", features![CardFeature::Craft]),
         (r"アクセ", false, "*ACCE*", features![CardFeature::Acce]),
         (r"（【アクセ】はシグニ１体に１枚までしか付けられない。このクラフトが付いているシグニが場を離れるとこのクラフトはゲームから除外される）", true, "", features![CardFeature::Acce]),
         (r"（あなたのルリグの下からカードを合計４枚ルリグトラッシュに置く）", true, "*EXCEED*", features![CardFeature::Exceed]),
