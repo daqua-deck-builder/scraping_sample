@@ -1855,6 +1855,142 @@ fn parse_card_skill(source: Vec<String>) -> (Skills, HashSet<CardFeature>) {
     (Skills::from_vec(all_skills), features)
 }
 
+#[derive(Debug)]
+pub struct Token {
+    no: String,
+    name: String,
+    pronounce: String,
+    artist: String,
+    card_type: CardType,
+    // klass: OptionString,
+    color: String,
+    // level: OptionString,
+    // cost: OptionString,
+    // limit: OptionString,
+    // power: OptionString,
+    // user: OptionString,
+    // time: Vec<String>,
+    // story: OptionString,
+    // format: Format,
+    rarity: String,
+    skill: Skills,
+    features: HashSet<CardFeature>,
+}
+
+impl Into<Card> for Token {
+    fn into(self) -> Card {
+        Card {
+            no: self.no.clone(),
+            name: self.name.clone(),
+            pronounce: self.pronounce.clone(),
+            artist: self.artist.clone(),
+            card_type: self.card_type.clone(),
+            klass: OptionString::empty(),
+            color: self.color.clone(),
+            level: OptionString::empty(),
+            cost: OptionString::empty(),
+            limit: OptionString::empty(),
+            power: OptionString::empty(),
+            user: OptionString::empty(),
+            time: Vec::new(),
+            story: OptionString::empty(),
+            format: Format::DivaSelection,
+            rarity: self.rarity.clone(),
+            skill: self.skill.clone(),
+            features: self.features.clone(),
+        }
+    }
+}
+
+impl WixossCard for Token {
+    fn from_source(source: String) -> Self {
+        let document: Html = Html::parse_document(&source);
+
+        let selector_card_num = Selector::parse(".cardNum").unwrap();
+        let card_no = match document.select(&selector_card_num).next() {
+            Some(card_no) => card_no.inner_html(),
+            None => "unknown".into()
+        };
+
+        let selector_card_name = Selector::parse(".cardName").unwrap();
+        let card_name = match document.select(&selector_card_name).next() {
+            Some(card_name) => element_to_name_and_pronounce(card_name.inner_html()),
+            None => ("unknown".into(), "unknown".into())
+        };
+
+        let selector_rarity = Selector::parse(".cardRarity").unwrap();
+        let card_rarity = match document.select(&selector_rarity).next() {
+            Some(card_rarity) => card_rarity.inner_html(),
+            None => "unknown rarity".into()
+        };
+
+        let selector_artist = Selector::parse(".cardImg p span").unwrap();
+        let artist = match document.select(&selector_artist).next() {
+            Some(artist) => artist.inner_html(),
+            None => "unknown artist".into()
+        };
+
+        let selector_card_data = Selector::parse(".cardData dd").unwrap();
+
+        let mut card_data: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_data) {
+            card_data.push(element.inner_html());
+        }
+
+        let selector_card_skill = Selector::parse(".cardSkill").unwrap();
+        let mut card_skills: Vec<String> = Vec::new();
+        for element in document.select(&selector_card_skill) {
+            card_skills.push(element.inner_html());
+        }
+
+        let (skill, features) = parse_card_skill(card_skills.clone());
+
+        Self {
+            no: card_no,
+            name: card_name.0,
+            pronounce: card_name.1,
+            artist,
+            card_type: CardType::Token,
+            // klass: OptionString::from_string(card_data[1].clone()),
+            color: card_data[2].clone(),
+            // cost: OptionString::from_string(flatten_break(card_data[5].clone())),
+            // level: OptionString::from_string(card_data[3].clone()),
+            // power: OptionString::from_string(card_data[7].clone()),
+            // user: OptionString::from_string(card_data[8].clone()),
+            // time: split_by_break(card_data[9].clone()),
+            // story: parse_story(card_data[11].clone().trim().to_string()),
+            // format: parse_format(card_data[10].clone()),
+            rarity: card_rarity,
+            skill,
+            features,
+        }
+    }
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "NO.\t:{}\n", self.no)?;
+        write!(f, "Name\t:{}\n", self.name)?;
+        write!(f, "読み\t:{}\n", self.pronounce)?;
+        write!(f, "絵\t:{}\n", self.artist)?;
+        write!(f, "Type\t:{}\n", self.card_type)?;
+        write!(f, "色\t:{}\n", self.color)?;
+        // write!(f, "種族\t:{}\n", self.klass)?;
+        // write!(f, "レベル\t:{}\n", self.level)?;
+        // write!(f, "コスト\t:{}\n", self.cost)?;
+        // write!(f, "リミット\t:{}\n", self.limit)?;
+        // write!(f, "パワー\t:{}\n", self.power)?;
+        // write!(f, "ルリグタイプ\t:{}\n", self.user)?;
+        // write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
+        // write!(f, "ストーリー\t:{}\n", self.story)?;
+        // write!(f, "フォーマット\t:{}\n", self.format)?;
+        write!(f, "レアリティ\t:{}\n", self.rarity)?;
+        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
+        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        write!(f, "")
+    }
+}
+
 
 fn wrap_by_gainskill(html: String) -> String {
     let replaced = html.replace("<div class=\"card_ability_add_border\">", "\n<gainskill>");
