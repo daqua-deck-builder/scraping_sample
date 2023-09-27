@@ -5,12 +5,12 @@ use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use scraper::{Html, Selector};
 use regex::Regex;
+use serde::Serialize;
 use crate::features;
-use crate::wixoss::CardType::Unknown;
 use crate::wixoss::constants::CardFeature;
 
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum CardType {
     Lrig,
     LrigAssist,
@@ -25,7 +25,7 @@ pub enum CardType {
     Piece,
     PieceRelay,
     Token,
-    Unknown
+    Unknown,
 }
 
 impl Display for CardType {
@@ -64,7 +64,7 @@ pub trait WixossCard: Sized {
 //     }
 // }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 enum Format {
     AllStar,
     KeySelection,
@@ -81,7 +81,7 @@ impl Display for Format {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct OptionString {
     value: Option<String>,
 }
@@ -132,7 +132,7 @@ impl Display for OptionInteger {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 struct Skills {
     value: Vec<String>,
 }
@@ -149,6 +149,7 @@ impl Display for Skills {
     }
 }
 
+#[derive(Debug, Serialize)]
 pub struct Card {
     no: String,
     name: String,
@@ -207,17 +208,41 @@ impl Card {
 
         let text = card_data[0].clone();
 
+        #[allow(unreachable_patterns)]
         match text.as_str() {
-            "シグニ" => CardType::Signi,
             "ルリグ" => CardType::Lrig,
+            "アシストルリグ" => CardType::LrigAssist,
+            "アーツ" => CardType::Arts,
+            "キー" => CardType::Key,
+            "シグニ" => CardType::Signi,
+            "スペル" => CardType::Spell,
+            "レゾナ" => CardType::Resona,
+            "アーツ<br />\nクラフト" => CardType::ArtsCraft,
+            "シグニ<br />\nクラフト" => CardType::ResonaCraft,
+            "スペル<br />\nクラフト" => CardType::SpellCraft,
+            "ピース" => CardType::Piece,
+            "ピース<br />\nリレー" => CardType::PieceRelay,
+            "コイン" => CardType::Token,
+            "トークン" => CardType::Token,
             _ => CardType::Unknown
         }
     }
 
     pub fn card_from_html(text: &String) -> Option<Self> {
         match Self::detect_card_type(&text.clone()) {
+            CardType::Lrig => Some(Lrig::from_source(text.clone()).into()),
+            CardType::LrigAssist => Some(LrigAssist::from_source(text.clone()).into()),
+            CardType::Arts => Some(Arts::from_source(text.clone()).into()),
+            CardType::Key => Some(Key::from_source(text.clone()).into()),
             CardType::Signi => Some(Signi::from_source(text.clone()).into()),
             CardType::Spell => Some(Spell::from_source(text.clone()).into()),
+            CardType::Resona => Some(Resona::from_source(text.clone()).into()),
+            CardType::ArtsCraft => Some(ArtsCraft::from_source(text.clone()).into()),
+            CardType::ResonaCraft => Some(ResonaCraft::from_source(text.clone()).into()),
+            CardType::SpellCraft => Some(SpellCraft::from_source(text.clone()).into()),
+            CardType::Piece => Some(Piece::from_source(text.clone()).into()),
+            CardType::PieceRelay => Some(PieceRelay::from_source(text.clone()).into()),
+            CardType::Token => Some(Token::from_source(text.clone()).into()),
             _ => None
         }
     }

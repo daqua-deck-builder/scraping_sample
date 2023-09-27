@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use serde::Serialize;
 
 #[macro_export]
 macro_rules! features {
@@ -14,7 +15,7 @@ macro_rules! features {
         };
     }
 
-#[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug, Serialize)]
 pub enum CardFeature {
     DoubleCrush,
     TripleCrush,
