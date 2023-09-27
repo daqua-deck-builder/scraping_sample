@@ -27,6 +27,7 @@ pub enum CardType {
 
 impl Display for CardType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        #[allow(unreachable_patterns)]
         let s: &str = match &self {
             CardType::Lrig => "ルリグ",
             CardType::LrigAssist => "ルリグ(アシスト)",
@@ -109,6 +110,7 @@ struct OptionInteger {
     value: Option<u32>,
 }
 
+#[allow(dead_code)]
 impl OptionInteger {
     fn from(value: Option<u32>) -> Self {
         match value {
@@ -142,11 +144,6 @@ impl Display for Skills {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value.join("\n"))
     }
-}
-
-enum AllCard {
-    Piece,
-    PieceRelay,
 }
 
 pub struct Card {

@@ -1,15 +1,4 @@
-use std::collections::HashMap;
-use reqwest::{Client, Response, Url};
-use scraper::{Html, Selector};
-use std::{fs};
-use std::fmt::Display;
-use std::path::{Path, PathBuf};
-use std::fs::{File, ReadDir};
-use std::io::prelude::*;
-use async_recursion::async_recursion;
-use serde::Deserialize;
-use serde_qs;
-use scraping_sample::wixoss::{Piece, WixossCard, Card};
+use scraping_sample::wixoss::{Piece, WixossCard};
 
 fn main() {
     let source: String = r##"

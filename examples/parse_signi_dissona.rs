@@ -1,15 +1,4 @@
-use std::collections::HashMap;
-use reqwest::{Client, Response, Url};
-use scraper::{Html, Selector};
-use std::{fs};
-use std::fmt::Display;
-use std::path::{Path, PathBuf};
-use std::fs::{File, OpenOptions, ReadDir};
-use std::io::prelude::*;
-use async_recursion::async_recursion;
-use serde::Deserialize;
-use serde_qs;
-use scraping_sample::wixoss::{Signi, WixossCard, Card, CardType, OptionString};
+use scraping_sample::wixoss::{Signi, WixossCard, Card};
 
 fn main() {
     let source: String = r##"
@@ -138,8 +127,4 @@ fn main() {
 
     let signi = Signi::from_source(source);
     println!("{}", &signi);
-    let card: Card = signi.into();
-    println!("{}", card);
-
-    // assert_eq!(card.story, OptionString::from_string("ディソナ".into()));
 }

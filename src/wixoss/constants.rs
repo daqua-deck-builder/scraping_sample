@@ -1,9 +1,10 @@
-use std::fmt::{Display, Formatter, write};
+use std::fmt::{Display, Formatter};
 
 #[macro_export]
 macro_rules! features {
         ($($feature:expr),* $(,)?) => {
             {
+                #[allow(unused_mut)]
                 let mut set = HashSet::new();
                 $(
                     set.insert($feature);
@@ -79,6 +80,7 @@ pub enum CardFeature {
 }
 
 impl Display for CardFeature {
+    #[allow(unreachable_patterns)]
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let label = match self {
             CardFeature::DoubleCrush => "ダブルクラッシュ",

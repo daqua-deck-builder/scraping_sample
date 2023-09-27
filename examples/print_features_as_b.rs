@@ -1,7 +1,5 @@
-#[macro_use]
 use scraping_sample::wixoss::constants::CardFeature;
 use std::collections::HashSet;
-use std::fmt::{Display};
 
 fn main() {
     let feature_set: HashSet<CardFeature> = vec![
