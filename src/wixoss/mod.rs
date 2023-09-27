@@ -103,7 +103,13 @@ impl OptionString {
 impl Serialize for OptionString {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
         match &self.value {
-            Some(s) => serializer.serialize_str(s),
+            Some(s) => {
+                match s.as_str() {
+                    "" => serializer.serialize_str(""),
+                    "-" => serializer.serialize_str(""),
+                    _ => serializer.serialize_str(s)
+                }
+            },
             None => serializer.serialize_str(""),
         }
     }
@@ -164,10 +170,29 @@ impl Serialize for Skills {
         // serializer.serialize_str(&joined)
     }
 }
+
 impl Display for Skills {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value.join("\n"))
     }
+}
+
+fn custom_vec_string_serialize<S>(value: &Vec<String>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+{
+let joined = value.iter()
+    .filter_map(|t| if t != "-" { Some(t.as_str()) } else { None })
+    .collect::<Vec<&str>>()
+    .join(", ");
+
+    serializer.serialize_str(&joined)
+
+    // let mut seq = serializer.serialize_seq(Some(value.len()))?;
+    // for e in value.iter() {
+    //     seq.serialize_element(e)?;
+    // }
+    // seq.end()
 }
 
 #[derive(Debug, Serialize)]
@@ -184,7 +209,10 @@ pub struct Card {
     limit: OptionString,
     power: OptionString,
     user: OptionString,
+
+    #[serde(serialize_with = "custom_vec_string_serialize")]
     time: Vec<String>,
+
     pub story: OptionString,
     format: Format,
     rarity: String,
