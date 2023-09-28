@@ -78,6 +78,7 @@ pub enum CardFeature {
     Charm,
     Craft,
     Acce,
+    Rise
 }
 
 impl Display for CardFeature {
@@ -143,6 +144,7 @@ impl Display for CardFeature {
             CardFeature::Charm => "チャーム",
             CardFeature::Craft => "クラフト",
             CardFeature::Acce => "アクセ",
+            CardFeature::Rise => "ライズ",
             _ => "未処理フィーチャー"
         };
         write!(f, "{}", label)
@@ -213,6 +215,7 @@ impl CardFeature {
             CardFeature::Charm => 2_u64.pow(56),
             CardFeature::Craft => 2_u64.pow(57),
             CardFeature::Acce => 2_u64.pow(58),
+            CardFeature::Rise => 1 << 59,
         }
     }
 }
