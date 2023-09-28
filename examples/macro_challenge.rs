@@ -21,7 +21,7 @@ macro_rules! def_features {
         }
 
         impl $group {
-            pub fn to_bit(&self) -> u64 {
+            pub fn to_bit(&self) -> u32 {
                 match self {
                     $(
                         $group::$name => 1 << $bit,
