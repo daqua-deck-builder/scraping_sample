@@ -1,7 +1,7 @@
-use serde;
+// use serde;
 use serde_json;
 
-macro_rules! my_macro {
+macro_rules! def_features {
     ($group:ident, [$(($name:ident, $desc:expr, $bit:expr)),*$(,)?]) => {
         #[derive(Clone, PartialEq, Eq, Hash, Debug)]
         pub enum $group {
@@ -42,18 +42,18 @@ macro_rules! my_macro {
     }
 }
 
-fn main() -> Result<(), ()> {
-my_macro!(CardFeature1, [
+def_features!(CardFeature1, [
     (DoubleCrush, "ダブルクラッシュ", 0),
     (TripleCrush, "トリプルクラッシュ", 1),
     (DiscardOpponent, "手札破壊", 2),
 ]);
 
-my_macro!(CardFeature2, [
+def_features!(CardFeature2, [
     (RandomDiscard, "ランダム手札破壊", 0),
     (Draw, "ドロー", 1),
 ]);
 
+fn main() -> Result<(), ()> {
     let index1 = CardFeature1::to_bit_index();
     println!("{}", serde_json::to_string_pretty(&index1).unwrap());
     let index2 = CardFeature2::to_bit_index();
