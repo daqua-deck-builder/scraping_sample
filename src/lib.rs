@@ -171,7 +171,7 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
     Ok(())
 }
 
-pub fn find_one(content: &String, selector: String) -> Option<String> {
+pub fn find_one(content: &str, selector: String) -> Option<String> {
     let document: Html = Html::parse_document(content);
     let main_selector: Selector = Selector::parse(selector.as_str()).unwrap();
 
