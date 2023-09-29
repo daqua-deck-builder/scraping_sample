@@ -177,7 +177,7 @@ impl Display for Skills {
     }
 }
 
-fn custom_vec_string_serialize<S>(value: &Vec<String>, serializer: S) -> Result<S::Ok, S::Error>
+fn custom_vec_string_serialize<S>(value: &[String], serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
 {
@@ -246,7 +246,7 @@ impl Display for Card {
 }
 
 impl Card {
-    pub fn detect_card_type(text: &String) -> CardType {
+    pub fn detect_card_type(text: &str) -> CardType {
         let document: Html = Html::parse_document(text);
         let selector_card_data = Selector::parse(".cardData dd").unwrap();
 
@@ -277,21 +277,21 @@ impl Card {
         }
     }
 
-    pub fn card_from_html(text: &String) -> Option<Self> {
-        match Self::detect_card_type(&text.clone()) {
-            CardType::Lrig => Some(Lrig::from_source(text.clone()).into()),
-            CardType::LrigAssist => Some(LrigAssist::from_source(text.clone()).into()),
-            CardType::Arts => Some(Arts::from_source(text.clone()).into()),
-            CardType::Key => Some(Key::from_source(text.clone()).into()),
-            CardType::Signi => Some(Signi::from_source(text.clone()).into()),
-            CardType::Spell => Some(Spell::from_source(text.clone()).into()),
-            CardType::Resona => Some(Resona::from_source(text.clone()).into()),
-            CardType::ArtsCraft => Some(ArtsCraft::from_source(text.clone()).into()),
-            CardType::ResonaCraft => Some(ResonaCraft::from_source(text.clone()).into()),
-            CardType::SpellCraft => Some(SpellCraft::from_source(text.clone()).into()),
-            CardType::Piece => Some(Piece::from_source(text.clone()).into()),
-            CardType::PieceRelay => Some(PieceRelay::from_source(text.clone()).into()),
-            CardType::Token => Some(Token::from_source(text.clone()).into()),
+    pub fn card_from_html(text: &str) -> Option<Self> {
+        match Self::detect_card_type(text.clone()) {
+            CardType::Lrig => Some(Lrig::from_source(text.to_owned()).into()),
+            CardType::LrigAssist => Some(LrigAssist::from_source(text.to_owned()).into()),
+            CardType::Arts => Some(Arts::from_source(text.to_owned()).into()),
+            CardType::Key => Some(Key::from_source(text.to_owned()).into()),
+            CardType::Signi => Some(Signi::from_source(text.to_owned()).into()),
+            CardType::Spell => Some(Spell::from_source(text.to_owned()).into()),
+            CardType::Resona => Some(Resona::from_source(text.to_owned()).into()),
+            CardType::ArtsCraft => Some(ArtsCraft::from_source(text.to_owned()).into()),
+            CardType::ResonaCraft => Some(ResonaCraft::from_source(text.to_owned()).into()),
+            CardType::SpellCraft => Some(SpellCraft::from_source(text.to_owned()).into()),
+            CardType::Piece => Some(Piece::from_source(text.to_owned()).into()),
+            CardType::PieceRelay => Some(PieceRelay::from_source(text.to_owned()).into()),
+            CardType::Token => Some(Token::from_source(text.to_owned()).into()),
             _ => None
         }
     }

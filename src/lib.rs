@@ -215,7 +215,7 @@ pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec
 }
 
 #[allow(dead_code)]
-pub fn find_many(content: &String, selector: String) -> Vec<String> {
+pub fn find_many(content: &str, selector: String) -> Vec<String> {
     let document: Html = Html::parse_document(content);
     let main_selector: Selector = Selector::parse(selector.as_str()).unwrap();
     let mut result: Vec<String> = Vec::new();
@@ -226,7 +226,7 @@ pub fn find_many(content: &String, selector: String) -> Vec<String> {
 }
 
 
-pub fn extract_number(s: &String) -> Option<i32> {
+pub fn extract_number(s: &str) -> Option<i32> {
     let digits: String = s.chars().filter(|c| c.is_ascii_digit()).collect();
     digits.parse().ok()
 }
@@ -314,16 +314,20 @@ pub fn parse_card_url(url_string: impl Display) -> Result<CardQuery, serde_qs::E
     serde_qs::from_str::<CardQuery>(query)
 }
 
-pub fn write_to_cache(filename: PathBuf, body: String) -> Result<(), ()> {
+pub enum CacheError {
+    ParentPathMissing,
+    FileCreationFailed(std::io::Error),
+    WriteFailed(std::io::Error),
+}
+
+pub fn write_to_cache(filename: PathBuf, body: String) -> Result<(), CacheError> {
     if let Some(parent_path) = filename.parent() {
-        try_mkdir(parent_path).unwrap();
-        let file: Result<File, std::io::Error> = File::create(&filename);
-        if let Ok(mut file_) = file {
-            file_.write_all(body.as_bytes()).unwrap();
-        }
+        std::fs::create_dir_all(parent_path).map_err(|_| CacheError::ParentPathMissing)?;
+        let mut file = File::create(&filename).map_err(CacheError::FileCreationFailed)?;
+        file.write_all(body.as_bytes()).map_err(CacheError::WriteFailed)?;
         Ok(())
     } else {
-        Err(())
+        Err(CacheError::ParentPathMissing)
     }
 }
 
