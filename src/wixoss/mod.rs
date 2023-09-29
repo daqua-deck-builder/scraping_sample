@@ -88,7 +88,7 @@ pub struct OptionString {
 
 impl OptionString {
     pub fn from_string(value: String) -> Self { // Noneの場合はNoneではなく""空文字
-        if value == String::from("") {
+        if value == *"" {
             Self { value: None }
         } else {
             Self { value: Some(value) }
@@ -142,7 +142,7 @@ impl Display for OptionInteger {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self.value {
             None => write!(f, ""),
-            Some(v) => write!(f, "{}", v.to_string())
+            Some(v) => write!(f, "{}", v)
         }
     }
 }
@@ -247,7 +247,7 @@ impl Display for Card {
 
 impl Card {
     pub fn detect_card_type(text: &String) -> CardType {
-        let document: Html = Html::parse_document(&text);
+        let document: Html = Html::parse_document(text);
         let selector_card_data = Selector::parse(".cardData dd").unwrap();
 
         let mut card_data: Vec<String> = Vec::new();
@@ -345,27 +345,27 @@ pub struct Piece {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Piece {
-    fn into(self) -> Card {
+impl From<Piece> for Card {
+    fn from(val: Piece) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -434,23 +434,23 @@ impl WixossCard for Piece {
 
 impl Display for Piece {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -476,27 +476,27 @@ pub struct PieceRelay {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for PieceRelay {
-    fn into(self) -> Card {
+impl From<PieceRelay> for Card {
+    fn from(val: PieceRelay) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
 
         }
     }
@@ -566,23 +566,23 @@ impl WixossCard for PieceRelay {
 
 impl Display for PieceRelay {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -608,27 +608,27 @@ pub struct Key {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Key {
-    fn into(self) -> Card {
+impl From<Key> for Card {
+    fn from(val: Key) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -697,23 +697,23 @@ impl WixossCard for Key {
 
 impl Display for Key {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -741,27 +741,27 @@ pub struct Signi {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Signi {
-    fn into(self) -> Card {
+impl From<Signi> for Card {
+    fn from(val: Signi) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
-            klass: self.klass.clone(),
-            color: self.color.clone(),
-            level: self.level.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
+            klass: val.klass.clone(),
+            color: val.color.clone(),
+            level: val.level.clone(),
             cost: OptionString::from_string("".into()),
-            limit: self.limit.clone(),
-            power: self.power.clone(),
-            user: self.user.clone(),
+            limit: val.limit.clone(),
+            power: val.power.clone(),
+            user: val.user.clone(),
             time: Vec::new(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -834,22 +834,22 @@ impl WixossCard for Signi {
 
 impl Display for Signi {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "リミット\t:{}\n", self.limit)?;
-        write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "種族\t:{}", self.klass)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "レベル\t:{}", self.level)?;
+        writeln!(f, "リミット\t:{}", self.limit)?;
+        writeln!(f, "パワー\t:{}", self.power)?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -876,27 +876,27 @@ pub struct Spell {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Spell {
-    fn into(self) -> Card {
+impl From<Spell> for Card {
+    fn from(val: Spell) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
+            user: val.user.clone(),
             time: Vec::new(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -968,22 +968,22 @@ impl WixossCard for Spell {
 
 impl Display for Spell {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "専用上限\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1009,27 +1009,27 @@ pub struct SpellCraft {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for SpellCraft {
-    fn into(self) -> Card {
+impl From<SpellCraft> for Card {
+    fn from(val: SpellCraft) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
+            user: val.user.clone(),
             time: Vec::new(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1101,22 +1101,22 @@ impl WixossCard for SpellCraft {
 
 impl Display for SpellCraft {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "専用上限\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "限定\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "限定\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1144,27 +1144,27 @@ pub struct Lrig {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Lrig {
-    fn into(self) -> Card {
+impl From<Lrig> for Card {
+    fn from(val: Lrig) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
-            level: self.level.clone(),
-            cost: self.cost.clone(),
-            limit: self.limit.clone(),
+            color: val.color.clone(),
+            level: val.level.clone(),
+            cost: val.cost.clone(),
+            limit: val.limit.clone(),
             power: OptionString::empty(),
-            user: self.user.clone(),
+            user: val.user.clone(),
             time: Vec::new(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1236,22 +1236,22 @@ impl WixossCard for Lrig {
 
 impl Display for Lrig {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "グロウコスト\t:{}\n", self.cost)?;
-        write!(f, "リミット\t:{}\n", self.limit)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "レベル\t:{}", self.level)?;
+        writeln!(f, "グロウコスト\t:{}", self.cost)?;
+        writeln!(f, "リミット\t:{}", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1278,27 +1278,27 @@ pub struct LrigAssist {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for LrigAssist {
-    fn into(self) -> Card {
+impl From<LrigAssist> for Card {
+    fn from(val: LrigAssist) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
-            level: self.level.clone(),
-            cost: self.cost.clone(),
-            limit: self.limit.clone(),
+            color: val.color.clone(),
+            level: val.level.clone(),
+            cost: val.cost.clone(),
+            limit: val.limit.clone(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1370,23 +1370,23 @@ impl WixossCard for LrigAssist {
 
 impl Display for LrigAssist {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "グロウコスト\t:{}\n", self.cost)?;
-        write!(f, "リミット\t:{}\n", self.limit)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "レベル\t:{}", self.level)?;
+        writeln!(f, "グロウコスト\t:{}", self.cost)?;
+        writeln!(f, "リミット\t:{}", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "タイミング\t:{}", self.time.join(", "))?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1414,27 +1414,27 @@ pub struct Arts {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Arts {
-    fn into(self) -> Card {
+impl From<Arts> for Card {
+    fn from(val: Arts) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1503,23 +1503,23 @@ impl WixossCard for Arts {
 
 impl Display for Arts {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "タイミング\t:{}", self.time.join(", "))?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1546,27 +1546,27 @@ pub struct Resona {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Resona {
-    fn into(self) -> Card {
+impl From<Resona> for Card {
+    fn from(val: Resona) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
-            klass: self.klass.clone(),
-            color: self.color.clone(),
-            level: self.level.clone(),
-            cost: self.cost.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
+            klass: val.klass.clone(),
+            color: val.color.clone(),
+            level: val.level.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
-            power: self.power.clone(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            power: val.power.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1640,24 +1640,24 @@ impl WixossCard for Resona {
 
 impl Display for Resona {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "種族\t:{}", self.klass)?;
+        writeln!(f, "レベル\t:{}", self.level)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
-        write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "パワー\t:{}", self.power)?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "タイミング\t:{}", self.time.join(", "))?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1684,27 +1684,27 @@ pub struct ResonaCraft {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for ResonaCraft {
-    fn into(self) -> Card {
+impl From<ResonaCraft> for Card {
+    fn from(val: ResonaCraft) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
-            klass: self.klass.clone(),
-            color: self.color.clone(),
-            level: self.level.clone(),
-            cost: self.cost.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
+            klass: val.klass.clone(),
+            color: val.color.clone(),
+            level: val.level.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
-            power: self.power.clone(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            power: val.power.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1778,24 +1778,24 @@ impl WixossCard for ResonaCraft {
 
 impl Display for ResonaCraft {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
-        write!(f, "種族\t:{}\n", self.klass)?;
-        write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
+        writeln!(f, "種族\t:{}", self.klass)?;
+        writeln!(f, "レベル\t:{}", self.level)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
-        write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "パワー\t:{}", self.power)?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "タイミング\t:{}", self.time.join(", "))?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1822,27 +1822,27 @@ pub struct ArtsCraft {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for ArtsCraft {
-    fn into(self) -> Card {
+impl From<ArtsCraft> for Card {
+    fn from(val: ArtsCraft) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
-            cost: self.cost.clone(),
+            cost: val.cost.clone(),
             limit: OptionString::empty(),
             power: OptionString::empty(),
-            user: self.user.clone(),
-            time: self.time.clone(),
-            story: self.story.clone(),
-            format: self.format.clone(),
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            user: val.user.clone(),
+            time: val.time.clone(),
+            story: val.story.clone(),
+            format: val.format.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -1911,23 +1911,23 @@ impl WixossCard for ArtsCraft {
 
 impl Display for ArtsCraft {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
-        write!(f, "コスト\t:{}\n", self.cost)?;
+        writeln!(f, "コスト\t:{}", self.cost)?;
         // write!(f, "リミット\t:{}\n", self.limit)?;
         // write!(f, "パワー\t:{}\n", self.power)?;
-        write!(f, "ルリグタイプ\t:{}\n", self.user)?;
-        write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
-        write!(f, "ストーリー\t:{}\n", self.story)?;
-        write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "ルリグタイプ\t:{}", self.user)?;
+        writeln!(f, "タイミング\t:{}", self.time.join(", "))?;
+        writeln!(f, "ストーリー\t:{}", self.story)?;
+        writeln!(f, "フォーマット\t:{}", self.format)?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -1943,7 +1943,7 @@ fn parse_card_skill(source: Vec<String>) -> (Skills, HashSet<CardFeature>) {
 
         let skills_for_this_string: Vec<String> = re_br
             .replace_all(&new_html, "\n")
-            .split("\n")
+            .split('\n')
             .map(|line| line.trim().to_string())
             .map(|line| {
                 let (l, features_detected) = rule_explain_to_feature(line);
@@ -1981,16 +1981,16 @@ pub struct Token {
     features: HashSet<CardFeature>,
 }
 
-impl Into<Card> for Token {
-    fn into(self) -> Card {
+impl From<Token> for Card {
+    fn from(val: Token) -> Self {
         Card {
-            no: self.no.clone(),
-            name: self.name.clone(),
-            pronounce: self.pronounce.clone(),
-            artist: self.artist.clone(),
-            card_type: self.card_type.clone(),
+            no: val.no.clone(),
+            name: val.name.clone(),
+            pronounce: val.pronounce.clone(),
+            artist: val.artist.clone(),
+            card_type: val.card_type.clone(),
             klass: OptionString::empty(),
-            color: self.color.clone(),
+            color: val.color.clone(),
             level: OptionString::empty(),
             cost: OptionString::empty(),
             limit: OptionString::empty(),
@@ -1999,9 +1999,9 @@ impl Into<Card> for Token {
             time: Vec::new(),
             story: OptionString::empty(),
             format: Format::DivaSelection,
-            rarity: self.rarity.clone(),
-            skill: self.skill.clone(),
-            features: self.features.clone(),
+            rarity: val.rarity.clone(),
+            skill: val.skill.clone(),
+            features: val.features.clone(),
         }
     }
 }
@@ -2073,12 +2073,12 @@ impl WixossCard for Token {
 
 impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "NO.\t:{}\n", self.no)?;
-        write!(f, "Name\t:{}\n", self.name)?;
-        write!(f, "読み\t:{}\n", self.pronounce)?;
-        write!(f, "絵\t:{}\n", self.artist)?;
-        write!(f, "Type\t:{}\n", self.card_type)?;
-        write!(f, "色\t:{}\n", self.color)?;
+        writeln!(f, "NO.\t:{}", self.no)?;
+        writeln!(f, "Name\t:{}", self.name)?;
+        writeln!(f, "読み\t:{}", self.pronounce)?;
+        writeln!(f, "絵\t:{}", self.artist)?;
+        writeln!(f, "Type\t:{}", self.card_type)?;
+        writeln!(f, "色\t:{}", self.color)?;
         // write!(f, "種族\t:{}\n", self.klass)?;
         // write!(f, "レベル\t:{}\n", self.level)?;
         // write!(f, "コスト\t:{}\n", self.cost)?;
@@ -2088,9 +2088,9 @@ impl Display for Token {
         // write!(f, "タイミング\t:{}\n", self.time.join(", "))?;
         // write!(f, "ストーリー\t:{}\n", self.story)?;
         // write!(f, "フォーマット\t:{}\n", self.format)?;
-        write!(f, "レアリティ\t:{}\n", self.rarity)?;
-        write!(f, "テキスト({})\t:{}\n", self.skill.value.len(), self.skill)?;
-        write!(f, "フィーチャー({})\t:{:?}\n", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
+        writeln!(f, "レアリティ\t:{}", self.rarity)?;
+        writeln!(f, "テキスト({})\t:{}", self.skill.value.len(), self.skill)?;
+        writeln!(f, "フィーチャー({})\t:{:?}", self.features.len(), self.features.iter().map(|i| i.to_string()).collect::<Vec<String>>().join(", "))?;
         write!(f, "")
     }
 }
@@ -2187,7 +2187,7 @@ fn replace_img_with_alt(html: String) -> String {
 }
 
 fn parse_story(html: String) -> OptionString {
-    if html.contains(r##"class="cardData_story_img""##) {
+    if html.contains(r#"class="cardData_story_img""#) {
         OptionString::from_string("ディソナ".into())
     } else {
         OptionString::empty()
@@ -2195,13 +2195,13 @@ fn parse_story(html: String) -> OptionString {
 }
 
 fn split_by_break(html: String) -> Vec<String> {
-    html.replace("\n", "").split("<br>")
+    html.replace('\n', "").split("<br>")
         .map(|s| s.to_string())
         .collect()
 }
 
 fn flatten_break(html: String) -> String {
-    html.replace("\n", "").replace("<br>", "")
+    html.replace('\n', "").replace("<br>", "")
 }
 
 fn parse_format(html: String) -> Format {

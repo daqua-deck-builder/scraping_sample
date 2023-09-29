@@ -8,7 +8,7 @@ use std::fs::{File, ReadDir};
 use std::io::prelude::*;
 use async_recursion::async_recursion;
 use serde::Deserialize;
-use serde_qs;
+
 pub mod wixoss;
 
 #[derive(Clone)]
@@ -116,7 +116,7 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
 
     let url = "https://www.takaratomy.co.jp/products/wixoss/card/card_list.php";
 
-    let search_query: SearchQuery = SearchQuery::new(&product_type, card_page);
+    let search_query: SearchQuery = SearchQuery::new(product_type, card_page);
 
     let main: Option<String> = match search_query.cache_check("./text_cache".to_string()) {
         Ok(content_) => {
@@ -136,7 +136,7 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
             let cache_filename: PathBuf = PathBuf::from(format!("./text_cache/{}", &search_query.to_filename()));
 
             if let Some(parent_path) = cache_filename.parent() {
-                try_mkdir(&parent_path).unwrap();
+                try_mkdir(parent_path).unwrap();
 
                 let content = find_one(&body, ".cardDip".into());
 
@@ -160,7 +160,7 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
             let pages = (count / 21) + 1;
 
             if card_page < pages {
-                cache_product_index(&product_type, card_page + 1).await.unwrap();
+                cache_product_index(product_type, card_page + 1).await.unwrap();
             }
         }
     } else {
@@ -172,15 +172,11 @@ pub async fn cache_product_index(product_type: &ProductType, card_page: i32) -> 
 }
 
 pub fn find_one(content: &String, selector: String) -> Option<String> {
-    let document: Html = Html::parse_document(&content);
+    let document: Html = Html::parse_document(content);
     let main_selector: Selector = Selector::parse(selector.as_str()).unwrap();
 
     println!("{:?}", document.clone());
-    if let Some(element) = document.select(&main_selector).next() {
-        Some(element.inner_html())
-    } else {
-        None
-    }
+    document.select(&main_selector).next().map(|element| element.inner_html())
 }
 
 pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec<String>, ()> {
@@ -190,7 +186,7 @@ pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec
 
     println!("{}", product_dir.display());
 
-    try_mkdir(&product_dir).unwrap();
+    try_mkdir(product_dir).unwrap();
     let files_result: std::io::Result<ReadDir> = fs::read_dir(product_dir);
 
     match files_result {
@@ -198,14 +194,14 @@ pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec
             let all_text: String = files.into_iter().map(|f| {
                 let p: fs::DirEntry = f.unwrap();
                 let file_path: PathBuf = p.path();
-                let content: String = fs::read_to_string(&file_path).unwrap();
+                let content: String = fs::read_to_string(file_path).unwrap();
 
                 content
             }).collect::<Vec<_>>().join("");
 
             let parsed_html: Html = Html::parse_document(&all_text);
             let selector: Selector = Selector::parse("a.c-box").unwrap();
-            let links: Vec<String> = parsed_html.select(&selector).into_iter().map(|element| {
+            let links: Vec<String> = parsed_html.select(&selector).map(|element| {
                 element.value().attr("href")
                     .unwrap_or("").to_owned()
             }).filter(|href| !href.is_empty()).collect();
@@ -220,7 +216,7 @@ pub async fn collect_card_detail_links(product_type: &ProductType) -> Result<Vec
 
 #[allow(dead_code)]
 pub fn find_many(content: &String, selector: String) -> Vec<String> {
-    let document: Html = Html::parse_document(&content);
+    let document: Html = Html::parse_document(content);
     let main_selector: Selector = Selector::parse(selector.as_str()).unwrap();
     let mut result: Vec<String> = Vec::new();
     for element in document.select(&main_selector) {
@@ -231,7 +227,7 @@ pub fn find_many(content: &String, selector: String) -> Vec<String> {
 
 
 pub fn extract_number(s: &String) -> Option<i32> {
-    let digits: String = s.chars().filter(|c| c.is_digit(10)).collect();
+    let digits: String = s.chars().filter(|c| c.is_ascii_digit()).collect();
     digits.parse().ok()
 }
 
@@ -243,7 +239,7 @@ pub struct CardQuery {
 
 impl CardQuery {
     pub fn get_relative_filename(&self) -> String {
-        let mut tokens: Vec<_> = self.card_no.split("-").collect();
+        let mut tokens: Vec<_> = self.card_no.split('-').collect();
         let id = tokens.last().unwrap().to_string();
         tokens.pop();
         let dir: String = tokens.join("-");
@@ -320,7 +316,7 @@ pub fn parse_card_url(url_string: impl Display) -> Result<CardQuery, serde_qs::E
 
 pub fn write_to_cache(filename: PathBuf, body: String) -> Result<(), ()> {
     if let Some(parent_path) = filename.parent() {
-        try_mkdir(&parent_path).unwrap();
+        try_mkdir(parent_path).unwrap();
         let file: Result<File, std::io::Error> = File::create(&filename);
         if let Ok(mut file_) = file {
             file_.write_all(body.as_bytes()).unwrap();

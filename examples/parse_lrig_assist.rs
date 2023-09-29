@@ -1,7 +1,7 @@
 use scraping_sample::wixoss::{LrigAssist, WixossCard, Card, CardType};
 
 fn main() {
-    let source: String = r##"
+    let source: String = r#"
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
 
@@ -111,7 +111,7 @@ fn main() {
     </body>
     </html>
 
-"##.into();
+"#.into();
 
     let lrig = LrigAssist::from_source(source);
     println!("{}", &lrig);

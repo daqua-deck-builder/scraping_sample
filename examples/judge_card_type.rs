@@ -1,7 +1,7 @@
 use scraping_sample::wixoss::{Card};
 
 fn main() {
-    let text = r###"
+    let text = r#"
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
 
@@ -148,7 +148,7 @@ fn main() {
     </body>
     </html>
 
-"###;
+"#;
 
     let t = Card::detect_card_type(&String::from(text.clone()));
     let c = Card::card_from_html(&String::from(text.clone()));

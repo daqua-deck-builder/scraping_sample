@@ -1,5 +1,4 @@
 use scraping_sample::{
-    parse_card_url,
     CardQuery,
 };
 

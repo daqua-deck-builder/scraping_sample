@@ -1,7 +1,7 @@
-use scraping_sample::wixoss::{Signi, WixossCard, Card};
+use scraping_sample::wixoss::{Signi, WixossCard};
 
 fn main() {
-    let source: String = r##"
+    let source: String = r#"
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
 
@@ -123,7 +123,7 @@ fn main() {
     </body>
     </html>
 
-"##.into();
+"#.into();
 
     let signi = Signi::from_source(source);
     println!("{}", &signi);

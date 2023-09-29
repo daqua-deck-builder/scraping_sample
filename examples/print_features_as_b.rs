@@ -13,7 +13,7 @@ fn main() {
 fn hashset_to_flags(feature_set: HashSet<CardFeature>) -> u64 {
     let mut b: u64 = 0;
     feature_set.iter().for_each(|f| {
-        b = b | f.to_bit()
+        b |= f.to_bit()
     });
     b
 }

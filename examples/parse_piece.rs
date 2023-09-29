@@ -1,7 +1,7 @@
 use scraping_sample::wixoss::{Piece, WixossCard};
 
 fn main() {
-    let source: String = r##"
+    let source: String = r#"
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
 
@@ -138,7 +138,7 @@ fn main() {
     <!-- /新デザイン -->
     </body>
     </html>
-    "##.into();
+    "#.into();
 
     let piece = Piece::from_source(source);
     // let card: Card = piece.into();

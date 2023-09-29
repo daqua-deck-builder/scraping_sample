@@ -154,7 +154,7 @@ impl Display for CardFeature {
 impl CardFeature {
     pub fn to_bit(&self) -> u64 {
         match self {
-            CardFeature::DoubleCrush => 1 as u64,
+            CardFeature::DoubleCrush => 1_u64,
             CardFeature::TripleCrush => 1 << 1,
             CardFeature::DiscardOpponent => 1 << 2,
             CardFeature::RandomDiscard => 1 << 3,

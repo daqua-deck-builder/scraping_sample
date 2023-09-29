@@ -1,8 +1,8 @@
 use scraping_sample::wixoss::{Card, CardType};
-use serde_json;
+
 
 fn main() {
-    let source: String = r##"
+    let source: String = r#"
     <div id="primary" class="content-area">
         <main id="main" class="site-main" role="main">
 
@@ -146,9 +146,9 @@ fn main() {
     </body>
     </html>
 
-"##.into();
+"#.into();
 
-    let card = Card::card_from_html(&String::from(source));
+    let card = Card::card_from_html(&source);
     println!("{}", serde_json::to_string_pretty(&card).unwrap());
     assert_eq!(card.unwrap().card_type, CardType::Resona);
 }
