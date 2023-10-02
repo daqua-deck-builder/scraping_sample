@@ -1,4 +1,2 @@
-/target
-/Cargo.lock
-/.idea/
-/text_cache/
+.idea
+target
