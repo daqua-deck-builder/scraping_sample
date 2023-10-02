@@ -842,7 +842,7 @@ impl Display for Signi {
         writeln!(f, "種族\t:{}", self.klass)?;
         writeln!(f, "色\t:{}", self.color)?;
         writeln!(f, "レベル\t:{}", self.level)?;
-        writeln!(f, "リミット\t:{}", self.limit)?;
+        writeln!(f, "リミット消費\t:{}", self.limit)?;
         writeln!(f, "パワー\t:{}", self.power)?;
         writeln!(f, "限定\t:{}", self.user)?;
         writeln!(f, "ストーリー\t:{}", self.story)?;
