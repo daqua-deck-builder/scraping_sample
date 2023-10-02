@@ -3,15 +3,19 @@ use axum::{response::Html, routing::get, Router};
 #[tokio::main]
 async fn main() {
     // build our application with a single route
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new().route("/", get(handler));
+
+    let port = 3000;
 
     // run it with hyper on localhost:3000
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
+    let server = axum::Server::bind(&format!("0.0.0.0:{}", port).as_str().parse().unwrap())
+        .serve(app.into_make_service());
+    println!("start listening on port {}", port);
+    server.await
         .unwrap();
+
 }
 
 async fn handler() -> Html<&'static str> {
-    Html("<h1>Hello, World!</h1>")
+    Html("<html><head><title>Home</title></head><body><h1>Hello, World!</h1></body></html>")
 }
