@@ -1,4 +1,4 @@
 [workspace]
-members = ["scraping_sample", "web_server"]
+members = ["scraping_sample", "web_server", "store"]
 resolver = "2"
 
