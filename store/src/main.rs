@@ -1,7 +1,6 @@
 mod schema;
 
 use std::fmt::{Display, Formatter};
-use diesel::sql_types::Bool;
 use tokio;
 use sqlx::{ColumnIndex, Error, FromRow, Postgres, postgres::{PgPoolOptions}};
 use serde::{Deserialize, Serialize};
