@@ -5,7 +5,6 @@ use tokio;
 use sqlx::{ColumnIndex, Error, FromRow, Postgres, postgres::{PgPoolOptions}};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use serde_json::map::Entry::Vacant;
 
 #[derive(Debug, FromRow, Serialize)]
 struct Card {
@@ -78,9 +77,9 @@ async fn main() {
     let pool: sqlx::Pool<Postgres> = pool.unwrap();
     let mut card_manager = CardManager { pool };
 
-    let new_card: NewCard = NewCard {name: "AAA".into()};
+    let new_card: NewCard = NewCard {name: "BBB".into()};
     let new_card = card_manager.create(new_card).await;
-    println!("{:?}", new_card);
+    println!("{:?}", new_card.unwrap());
 
     let cards = Cards::new(card_manager.all().await.unwrap());
 
