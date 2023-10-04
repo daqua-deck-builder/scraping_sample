@@ -4,6 +4,7 @@ diesel::table! {
     card (id) {
         id -> Int4,
         name -> Varchar,
+        publoc -> Bool
     }
 }
 

@@ -2,7 +2,7 @@ mod schema;
 
 use std::fmt::{Display, Formatter};
 use tokio;
-use sqlx::{ColumnIndex, Error, FromRow, Postgres, postgres::{PgPoolOptions}};
+use sqlx::{Error, FromRow, Postgres, postgres::{PgPoolOptions}};
 use serde::{Deserialize, Serialize};
 use serde_json;
 
@@ -10,6 +10,7 @@ use serde_json;
 struct Card {
     id: i32,
     name: String,
+    public: bool
 }
 
 #[derive(Serialize)]
@@ -38,7 +39,8 @@ impl Display for Cards {
 
 #[derive(Deserialize)]
 struct NewCard {
-    name: String
+    name: String,
+    public: bool
 }
 
 struct CardManager {
@@ -49,7 +51,7 @@ impl CardManager {
     async fn all(&mut self) -> Result<Vec<Card>, sqlx::Error> {
         println!("[all]");
 
-        let value: Vec<Card> = sqlx::query_as("select * from card;")
+        let value: Vec<Card> = sqlx::query_as("select id, name, public from card;")
             .fetch_all(&self.pool)
             .await?;
 
@@ -59,8 +61,9 @@ impl CardManager {
     async fn create(&mut self, nc: NewCard) -> Result<Card, sqlx::Error> {
         println!("[create]");
 
-        let value: Card = sqlx::query_as("insert into card (name) values ($1) returning id, name;")
+        let value: Card = sqlx::query_as("insert into card (name, public) values ($1, $2) returning id, name, public;")
             .bind(&nc.name)
+            .bind(&nc.public)
             .fetch_one(&self.pool)
             .await?;
         Ok(value)
@@ -69,8 +72,9 @@ impl CardManager {
     async fn update(&mut self, card: Card) -> Result<Card, sqlx::Error> {
         println!("[update]");
 
-        let value: Card = sqlx::query_as("update card set name = $1 where id = $2 returning id, name;")
+        let value: Card = sqlx::query_as("update card set name = $1 , public = $2 where id = $3 returning id, name, public;")
             .bind(&card.name)
+            .bind(&card.public)
             .bind(&card.id)
             .fetch_one(&self.pool)
             .await?;
@@ -80,7 +84,7 @@ impl CardManager {
     async fn get(&self, id: i32) -> Result<Card, sqlx::Error> {
         println!("[get]");
 
-        let user: Card = sqlx::query_as("select id, name from card where id = $1;")
+        let user: Card = sqlx::query_as("select id, name, public from card where id = $1;")
             .bind(id)
             .fetch_one(&self.pool)
             .await?;
@@ -116,7 +120,7 @@ async fn main() {
     let pool: sqlx::Pool<Postgres> = pool.unwrap();
     let mut card_manager = CardManager { pool };
 
-    let new_card: NewCard = NewCard {name: "BBB".into()};
+    let new_card: NewCard = NewCard {name: "BBB".into(), public: true};
     let new_card = card_manager.create(new_card).await.unwrap();
     println!("{:?}", new_card);
 
