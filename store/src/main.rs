@@ -2,9 +2,10 @@ mod schema;
 
 use std::fmt::{Display, Formatter};
 use tokio;
-use sqlx::{Error, FromRow, Postgres, postgres::{PgPoolOptions}};
-use serde::Serialize;
+use sqlx::{ColumnIndex, Error, FromRow, Postgres, postgres::{PgPoolOptions}};
+use serde::{Deserialize, Serialize};
 use serde_json;
+use serde_json::map::Entry::Vacant;
 
 #[derive(Debug, FromRow, Serialize)]
 struct Card {
@@ -36,6 +37,11 @@ impl Display for Cards {
     }
 }
 
+#[derive(Deserialize)]
+struct NewCard {
+    name: String
+}
+
 struct CardManager {
     pool: sqlx::Pool<Postgres>,
 }
@@ -50,6 +56,16 @@ impl CardManager {
 
         Ok(value)
     }
+
+    async fn create(&mut self, nc: NewCard) -> Result<Card, sqlx::Error> {
+        println!("[create]");
+
+        let value: Card = sqlx::query_as("insert into card (name) values ($1) returning id, name;")
+            .bind(&nc.name)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(value)
+    }
 }
 
 #[tokio::main]
@@ -61,6 +77,10 @@ async fn main() {
 
     let pool: sqlx::Pool<Postgres> = pool.unwrap();
     let mut card_manager = CardManager { pool };
+
+    let new_card: NewCard = NewCard {name: "AAA".into()};
+    let new_card = card_manager.create(new_card).await;
+    println!("{:?}", new_card);
 
     let cards = Cards::new(card_manager.all().await.unwrap());
 
