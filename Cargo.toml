@@ -1,4 +1,4 @@
 [workspace]
-members = ["scraping_sample", "web_server", "store"]
+members = ["scraping_sample", "web_server", "store", "serde_django", "djangomodel"]
 resolver = "2"
 

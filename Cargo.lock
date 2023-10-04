@@ -712,6 +712,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "djangomodel"
+version = "0.1.0"
+dependencies = [
+ "serde_django",
+]
+
+[[package]]
 name = "dotenvy"
 version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2333,6 +2340,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.37",
+]
+
+[[package]]
+name = "serde_django"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]
