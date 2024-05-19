@@ -78,7 +78,10 @@ pub enum CardFeature {
     Charm,
     Craft,
     Acce,
-    Rise
+    Rise,
+    Recollect,
+    SeekTop,
+    EraseSkill
 }
 
 impl Display for CardFeature {
@@ -145,6 +148,9 @@ impl Display for CardFeature {
             CardFeature::Craft => "クラフト",
             CardFeature::Acce => "アクセ",
             CardFeature::Rise => "ライズ",
+            CardFeature::Recollect => "リコレクト",
+            CardFeature::SeekTop => "シーク",
+            CardFeature::EraseSkill => "能力消去",
             _ => "未処理フィーチャー"
         };
         write!(f, "{}", label)
@@ -216,6 +222,9 @@ impl CardFeature {
             CardFeature::Craft => 1 << 57,
             CardFeature::Acce => 1 << 58,
             CardFeature::Rise => 1 << 59,
+            CardFeature::Recollect => 1 << 60,
+            CardFeature::SeekTop => 1 << 61,
+            CardFeature::EraseSkill => 1 << 62,
         }
     }
 }
