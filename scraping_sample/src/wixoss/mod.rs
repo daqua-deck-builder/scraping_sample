@@ -148,7 +148,7 @@ impl Display for OptionInteger {
 }
 
 #[derive(Clone, Debug)]
-struct Skills {
+pub struct Skills {
     value: Vec<String>,
 }
 
@@ -294,6 +294,11 @@ impl Card {
             CardType::Token => Some(Token::from_source(text.to_owned()).into()),
             _ => None
         }
+    }
+
+    pub fn check_have_feature(self: &Self, card_feature: CardFeature) -> bool {
+        println!("feature check: positive {}", card_feature);
+        self.features.contains(&card_feature)
     }
 }
 
@@ -2133,10 +2138,10 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"ダウンする。", false, "*DOWN*", features![CardFeature::Down]),
         (r"エナチャージ", false, "*CHARGE*", features![CardFeature::Charge]),
         (r"残りを好きな順番でデッキの一番下に置く", false, "*BOTTOM CHECK*", features![CardFeature::BottomCheck]),
-        (r"トラッシュに置", false, "*TRASH*", features![CardFeature::Trash]),
+        (r"それをトラッシュに置", false, "*TRASH*", features![CardFeature::Trash]),
         (r"シグニバリア", false, "*BARRIER*", features![CardFeature::Barrier]),
         (r"ルリグバリア", false, "*BARRIER*", features![CardFeature::Barrier]),
-        (r"がアタックしたとき", false, "*ON ATTACK*", features![CardFeature::OnAttack]),
+        // (r"がアタックしたとき", false, "*ON ATTACK*", features![CardFeature::OnAttack]),
         (r"アサシン", false, "*ASSASSIN*", features![CardFeature::Assassin]),
         (r"シャドウ", false, "*SHADOW*", features![CardFeature::Shadow]),
         (r"【マルチエナ】", false, "*MULTI ENER*", features![CardFeature::MultiEner]),
@@ -2148,11 +2153,11 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"バニッシュ", false, "*BANISH*", features![CardFeature::Banish]),
         (r"凍結する", false, "*FREEZE*", features![CardFeature::Freeze]),
         (r"手札に戻す", false, "*BOUNCE*", features![CardFeature::Bounce]),
-        (r"手札に加え", false, "*SALVAGE*", features![CardFeature::Salvage]),
+        // (r"手札に加え", false, "*SALVAGE*", features![CardFeature::Salvage]),
         (r"ライフクロス[（\u{FF10}-\u{FF19}）]+枚をトラッシュに置", false, "*LIFE TRASH*", features![CardFeature::LifeTrash]),
         (r"エナゾーンからカード[（\u{FF10}-\u{FF19}）]+枚を.+トラッシュに置", false, "*ENER ATTACK*", features![CardFeature::EnerAttack]),
         (r"ルリグトラッシュに置", false, "*LRIG TRASH*", features![CardFeature::LrigTrash]),
-        (r"アタックフェイズ開始時", false, "*ON ATTACK START*", features![CardFeature::OnAttackStart]),
+        // (r"アタックフェイズ開始時", false, "*ON ATTACK START*", features![CardFeature::OnAttackStart]),
         (r"ライフクロスに加える", false, "*ADD LIFE*", features![CardFeature::AddLife]),
         (r"ランサー", false, "*LANCER*", features![CardFeature::Lancer]),
         (r"ライフクロスを１枚クラッシュする", false, "*CRUSH*", features![CardFeature::LifeCrush]),
@@ -2163,8 +2168,17 @@ fn rule_explain_to_feature(text: String) -> (String, Vec<CardFeature>) {
         (r"能力を失う", false, "*ERASE SKILL*", features![CardFeature::EraseSkill]),
         (r"アタックできない", false, "*NON ATTACKABLE*", features![CardFeature::NonAttackable]),
         (r"カードを[（\u{FF10}-\u{FF19}）]+枚引", false, "*DRAW*", features![CardFeature::Draw]),
+        (r"デッキの上からカードを[（\u{FF10}-\u{FF19}）]+枚トラッシュに置", false, "*DROP*", features![CardFeature::Drop]),
         (r"デッキの一番下に置", false, "*DECK BOUNCE*", features![CardFeature::DeckBounce]),
         (r"シグニのパワーを＋", false, "*POWER UP*", features![CardFeature::PowerUp]),
+        (r"(シグニ|それ)のパワーを－", false, "*POWER DOWN*", features![CardFeature::PowerDown]),
+        (r"ダメージを受けない", false, "*CANCEL DAMAGE*", features![CardFeature::CancelDamage]),
+        (r"トラッシュからシグニ.+場に出", false, "*REANIMATE*", features![CardFeature::Reanimate]),
+        (r"このルリグをアップし", false, "*ADDITIONAL ATTACK*", features![CardFeature::AdditionalAttack]),
+        (r"対戦相手は【ガード】ができない", false, "*UNGUARDABLE*", features![CardFeature::UnGuardable]),
+        (r"スペル[（\u{FF10}-\u{FF19}）]+枚を.+手札に加え", false, "*SALVAGE SPELL*", features![CardFeature::SalvageSpell]),
+        (r"シグニ[（\u{FF10}-\u{FF19}）]+枚を.+手札に加え", false, "*SALVAGE SIGNI*", features![CardFeature::Salvage]),
+        (r"このシグニがアタックしたとき.+バニッシュする", false, "*BANISH ON ATTACK*", features![CardFeature::BanishOnAttack]),
 
     ];
 
